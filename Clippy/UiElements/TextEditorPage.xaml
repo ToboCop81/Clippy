@@ -1,0 +1,40 @@
+﻿<Page x:Class="Clippy.UiElements.TextEditorPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="450"
+      Title="TextEditorPage">
+
+    <Grid Name="TextEditorGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="ToolBarRow" Height="20"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="20"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel  Grid.Row="0" Orientation="Horizontal">
+            <ComboBox x:Name="FontComboBox" ItemsSource="{x:Static Fonts.SystemFontFamilies}" FontSize="10" Height="20" Width="150" HorizontalAlignment="Left" SelectedIndex="12" SelectionChanged="FontComboBox_SelectionChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontFamily="{Binding}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button x:Name="PlusButton" Content="+" Width="20" FontSize="11" FontWeight="Bold" Padding="1,0" Margin="3,0,0,0" Click="PlusButton_Click"/>
+            <TextBox x:Name="FontSizeTextBox" TextWrapping="NoWrap" Text="12" Width="40" HorizontalContentAlignment="Center" TextChanged="FontSizeTextBox_TextChanged" KeyDown="FontSizeTextBox_KeyDown" AllowDrop="False" MaxLines="1" MaxLength="3" />
+            <Button x:Name="MinusButton" Content="-" Width="20" FontSize="11" FontWeight="Bold" Padding="1,0" Click="MinusButton_Click"/>
+        </StackPanel>
+        <ScrollViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto">
+            <TextBox x:Name="MainTextbox" Text="" FontFamily="Courier New" FontSize="11" AcceptsReturn="True" AcceptsTab="True" MouseWheel="MainTextbox_MouseWheel" TextChanged="MainTextbox_TextChanged" SelectionChanged="MainTextbox_SelectionChanged" KeyDown="MainTextbox_KeyDown"/>
+        </ScrollViewer>
+        <StatusBar x:Name="TextEditorStatusBar" Grid.Row="2">
+            <Label x:Name="LineCountCaptionLabel" Width="30" Content="Lines" Height="14" FontSize="11" Padding="0"/>
+            <Label x:Name="LineCountLabel" Width="50" Content="0" Height="14" FontSize="11" Padding="0"/>
+            <Label x:Name="CurrentLineCaptionLabel" Width="10" Content="L:" Height="14" FontSize="11" Padding="0"/>
+            <Label x:Name="CurrentLineLabel" Width="50" Content="0" Height="14" FontSize="11" Padding="0"/>
+            <Label x:Name="CaretCaptionLabel" Width="20" Content="Cur:" Height="14" FontSize="11" Padding="0"/>
+            <Label x:Name="CaretLabel" Width="50" Content="0" Height="14" FontSize="11" Padding="0"/>
+        </StatusBar>
+    </Grid>
+</Page>

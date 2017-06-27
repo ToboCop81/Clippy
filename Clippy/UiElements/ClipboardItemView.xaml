@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="Clippy.UiElements.ClipboardItemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Clippy.UiElements"
+             mc:Ignorable="d" 
+             Width="220" Height="60">
+    <Border  BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
+        <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" Margin="2,2,2,2" Height="56" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBox x:Name="NameBox" Text="{Binding Path=Title}" Height="22" VerticalContentAlignment="Center" Margin="25,3,5,3" AllowDrop="False" MaxLines="1" />
+            <CheckBox x:Name="SelectBox" Margin="5,7,0,5" Grid.Row="0" RenderTransformOrigin="0.033,0.382" HorizontalAlignment="Left" HorizontalContentAlignment="Center" IsChecked="{Binding Path=Selected}"/>
+            <Label x:Name="ItemTypeLabel" Margin="5,0,110,0" VerticalAlignment="Bottom" Height="28" HorizontalContentAlignment="Stretch" Grid.Row="1" Content="{Binding Path=Type}" />
+            <Button x:Name="CopyButton" HorizontalAlignment="Right" Margin="0,0,5,3"  Grid.Row="1" VerticalAlignment="Bottom" Width="65" Height="22" HorizontalContentAlignment="Center" >
+                <StackPanel Orientation="Horizontal">
+                    <Image x:Name="copyImage" Source="/Clippy;component/Graphics/Copy.png" Height="16" />
+                    <TextBlock HorizontalAlignment="Right" Margin="5,0,0,0">Copy</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="EditButton" HorizontalAlignment="Right" Margin="0,0,81,3" Grid.Row="1" VerticalAlignment="Bottom" Width="24" Height="22" >
+                <Image x:Name="editImage" Source="/Clippy;component/Graphics/Edit.png" Height="16" />
+            </Button>
+            <Button x:Name="DeleteButton" HorizontalAlignment="Right" Margin="0,0,110,3" Grid.Row="1" VerticalAlignment="Bottom" Width="24" Height="22" >
+                <Image x:Name="deleteImage" Source="/Clippy;component/Graphics/Delete.png" Height="16" />
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>
