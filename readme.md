@@ -20,7 +20,7 @@ Clippy is a tool which is designed to get content from the clipoard and holding 
 
 ## Change log:
 
-## Version 1.0
+### Version 1.0
 
 * Initial release
 
