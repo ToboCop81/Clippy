@@ -6,6 +6,8 @@ using Microsoft.Win32;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Linq;
+using System.Windows.Controls;
 
 namespace Clippy
 {
@@ -28,20 +30,24 @@ namespace Clippy
 
             SetupWindow();
 
-            LoadItemsList();         
+            LoadItemsList();
+            ApplySettings();
         }
 
         private void SetupWindow()
         {
-            MenuItemAutosaveWindowLayout.IsChecked = ClippySettings.Instance.SaveWindowLayoutState;
-            MenuItemAutosaveList.IsChecked = ClippySettings.Instance.AutoSaveState;
-            MenuItemTextItemNameFromContent.IsChecked = ClippySettings.Instance.TextItemNameFromContent;
             ListBoxClipboardItems.ItemsSource = ClipDataManager.Instance.Items;
 
             if (ClippySettings.Instance.SaveWindowLayoutState)
             {
                 ClippySettings.Instance.RestoreWindowLayout(this);
             }
+        }
+
+        private void ApplySettings()
+        {
+            ButtonGetFromFile.Visibility = ClippySettings.Instance.UseClipboardFiles ? Visibility.Visible : Visibility.Collapsed;
+            UpdateItemsList();
         }
 
         private void LoadItemsList()
@@ -77,6 +83,16 @@ namespace Clippy
             termsOfUseWindow.Show();
         }
 
+        private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow settingsWindow = new SettingsWindow();
+            bool? dialogResult = settingsWindow.ShowDialog();
+            if (dialogResult.HasValue && dialogResult.Value == true)
+            {
+                ApplySettings();
+            }
+        }
+
         private void MenuItemClear_Click(object sender, RoutedEventArgs e)
         {
             if (ClipDataManager.Instance.Items.Count == 0)
@@ -86,7 +102,7 @@ namespace Clippy
 
             MessageBoxResult result = MessageBox.Show(
                 "Do you really want to remove all items from the list?",
-                $"{this.Title}: Confirm Clearing",
+                $"{Title}: Confirm Clearing",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Exclamation);
 
@@ -105,73 +121,87 @@ namespace Clippy
 
             MessageBoxResult result = MessageBox.Show(
                 "Do you really want to remove the selected items from the list?",
-                $"{this.Title}: Confirm Removing",
+                $"{Title}: Confirm Removing",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Exclamation);
 
             if (result == MessageBoxResult.Yes)
             {
                 ClipDataManager.Instance.RemoveSelectedItems();
+                ListBoxClipboardItems.Items.Clear();
+                GC.Collect();
             }
         }
-
-        private void MenuItemGetData_Click(object sender, RoutedEventArgs e)
+        
+        private void ButtonGetFromClipboard_Click(object sender, RoutedEventArgs e)
         {
             ClipDataManager.Instance.GetDataFromClipboard();
         }
 
-        private void CopyButton_Click(object sender, RoutedEventArgs e)
+        private void ButtonGetFromTextFile_Click(object sender, RoutedEventArgs e)
         {
-            IClipboardItem currentItem = ((FrameworkElement)sender).DataContext as IClipboardItem;
-            if (currentItem != null)
-            {
-                currentItem.CopyToClipboard();
-            }
+            ClipDataManager.Instance.GetDataFromFile(DataKind.PlainText);
         }
 
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        private void ClipboardItemView_ClickHandler(object sender, ItemAction action, ClipboardItemEventArgs e)
         {
             IClipboardItem currentItem = ((FrameworkElement)sender).DataContext as IClipboardItem;
             if (currentItem != null)
             {
-                ClipDataManager.Instance.RemoveItem(currentItem.Index);
-            }
-        }
-
-        private void EditButton_Click(object sender, RoutedEventArgs e)
-        {
-            IClipboardItem currentItem = ((FrameworkElement)sender).DataContext as IClipboardItem;
-            if (currentItem != null)
-            {
-                ContentViewWindow contentViewWindow = new ContentViewWindow(currentItem);
-                contentViewWindow.ShowDialog();
-                if (contentViewWindow.ContentChanged)
+                switch (action)
                 {
-                    ListBoxClipboardItems.Items.Refresh();
+                    case ItemAction.ItemCopy:
+                        currentItem.CopyToClipboard();
+                        break;
+                    case ItemAction.ItemFileCopy:
+                        if (!ClipDataManager.Instance.WriteDataToFile(currentItem.Index))
+                        {
+                            MessageBox.Show(
+                                "Saving failed: " + Environment.NewLine + ClipDataManager.Instance.Status, Title + " - Save content to file...",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                        }
+                        break;
+                    case ItemAction.ItemEdit:
+                        ContentViewWindow contentViewWindow = new ContentViewWindow(currentItem);
+                        contentViewWindow.ShowDialog();
+                        if (contentViewWindow.ContentChanged)
+                        {
+                            ListBoxClipboardItems.Items.Refresh();
+                        }
+                        break;
+                    case ItemAction.ItemDelete:
+                        ClipDataManager.Instance.RemoveItem(currentItem.Index);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
 
-        private void ItemsChangedHandler(ItemsChangeType changeType, ItemsChangedEventArgs e)
+        private void ItemsChangedHandler(ItemsChangeType changeType, ClipboardItemEventArgs e)
         {
-            ListBoxClipboardItems.ItemsSource = ClipDataManager.Instance.Items;
-            ListBoxClipboardItems.Items.Refresh();
+            UpdateItemsList();
         }
 
         private void ClippyMainWindow_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F5)
             {
-                ListBoxClipboardItems.ItemsSource = ClipDataManager.Instance.Items;
-                ListBoxClipboardItems.Items.Refresh();
+                UpdateItemsList();
             }
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && e.Key == Key.V)
+            if (e.Key == Key.F3)
             {
                 ClipDataManager.Instance.GetDataFromClipboard();
+            }
+
+            if (ClippySettings.Instance.UseClipboardFiles && e.Key == Key.F4)
+            {
+                ClipDataManager.Instance.GetDataFromFile(DataKind.PlainText);
             }
         }
 
@@ -191,10 +221,6 @@ namespace Clippy
             {
                 ClippySettings.Instance.SaveWindowLayout(this);
             }
-
-            ClippySettings.Instance.SaveWindowLayoutState = MenuItemAutosaveWindowLayout.IsChecked;
-            ClippySettings.Instance.AutoSaveState = MenuItemAutosaveList.IsChecked;
-            ClippySettings.Instance.TextItemNameFromContent = MenuItemTextItemNameFromContent.IsChecked;
         }
 
         private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e)
@@ -250,9 +276,12 @@ namespace Clippy
             }
         }
 
-        private void MenuItemTextItemNameFromContent_Click(object sender, RoutedEventArgs e)
+        private void UpdateItemsList()
         {
-            ClippySettings.Instance.TextItemNameFromContent = MenuItemTextItemNameFromContent.IsChecked;
+            ListBoxClipboardItems.ItemsSource = ClipDataManager.Instance.Items;
+            ListBoxClipboardItems.Items.Refresh();
+            ItemCountLabel.Content = ClipDataManager.Instance.Items.Count;
         }
+
     }
 }

@@ -1,4 +1,8 @@
-﻿using Clippy.Common;
+﻿/// Clippy - File: "ClipboardItemBase.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using Clippy.Common;
 using Clippy.Interfaces;
 using System;
 

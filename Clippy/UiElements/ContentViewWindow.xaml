@@ -1,4 +1,9 @@
-﻿<Window x:Name="ContentPreviewWindow" x:Class="Clippy.UiElements.ContentViewWindow"
+﻿<!--
+    Clippy - File: "ContentPreviewWindow.xaml"
+    Copyright © 2017 by Tobias Zorn
+    Licensed under GNU GENERAL PUBLIC LICENSE
+--> 
+<Window x:Name="ContentPreviewWindow" x:Class="Clippy.UiElements.ContentViewWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,25 +13,24 @@
         Title="Clippy - Content view" Height="400" Width="450" MinWidth="250" MinHeight="200" KeyDown="Window_KeyDown" Closing="ContentPreviewWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition x:Name="TitleRow" Height="28"></RowDefinition>
+            <RowDefinition x:Name="TitleRow" Height="32"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition x:Name="FooterRow" Height="32"></RowDefinition>
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
-            <TextBox x:Name="TitleLabel" Text="Content title"  VerticalAlignment="Top" Margin="20,4,20,0"/>
+        <Border Grid.Row="0" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" Height="32">
+            <TextBox x:Name="TitleLabel" Text="Content title"  VerticalAlignment="Top" Margin="20,5" Height="22"/>
         </Border>
         <Frame x:Name="ContentFrame" Content="" Grid.Row="1" NavigationUIVisibility="Hidden" />
         <Border Grid.Row="2" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
-                <Button x:Name="CloseButton" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,5" Width="45" Click="CloseButton_Click" >
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock HorizontalAlignment="Right">Close</TextBlock>
-                    </StackPanel>
+                <Button x:Name="CloseButton" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,5" Width="40" ToolTip="Close (Esc)" Click="CloseButton_Click" >
+                    <Image x:Name="CloseImage" Source="/Clippy;component/Graphics/Close.png" Height="16" />
                 </Button>
-                <Button x:Name="CommitButton" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,5" Width="120" Click="CommitButton_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock HorizontalAlignment="Right">Commit changes</TextBlock>
-                    </StackPanel>
+                <Button x:Name="CommitButton" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,5" Width="40" ToolTip="Commit changes (Ctrl + S)" Click="CommitButton_Click">
+                    <Image x:Name="CommitImage" Source="/Clippy;component/Graphics/Commit.png" Height="16" />
+                </Button>
+                <Button x:Name="CommitAndCloseButton" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,5" Width="70" ToolTip="Commit changes and close (F2)" Click="CommitAndCloseButton_Click" SnapsToDevicePixels="True">
+                    <Image x:Name="CommitAndCloseImage" Source="/Clippy;component/Graphics/CommitAndClose.png" Height="16"/>
                 </Button>
             </StackPanel>
         </Border>

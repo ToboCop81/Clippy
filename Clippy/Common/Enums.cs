@@ -1,4 +1,8 @@
-﻿namespace Clippy.Common
+﻿/// Clippy - File: "Enums.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+namespace Clippy.Common
 {
     public enum DataKind
     {
@@ -13,7 +17,15 @@
         ListCleared,
         ItemAdded,
         ItemRemoved,
-        ItemsLoaded
+        ItemsLoaded,
+    }
+
+    public enum ItemAction
+    {
+        ItemCopy,
+        ItemFileCopy,
+        ItemEdit,
+        ItemDelete
     }
 
     /// <summary>

@@ -1,4 +1,8 @@
-﻿using Clippy.Common;
+﻿/// Clippy - File: "ImageItem.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using Clippy.Common;
 using System;
 using System.Windows;
 using System.Windows.Media.Imaging;

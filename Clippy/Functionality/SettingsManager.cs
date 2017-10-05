@@ -1,4 +1,8 @@
-﻿using Clippy.Resources;
+﻿/// Clippy - File: "SettingsManager.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using Clippy.Resources;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,4 +1,8 @@
-﻿using System.Diagnostics;
+﻿/// Clippy - File: "TermsOfUseWindow.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;

@@ -1,4 +1,8 @@
-﻿using System;
+﻿/// Clippy - File: "Setting.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using System;
 
 namespace Clippy.Resources
 {

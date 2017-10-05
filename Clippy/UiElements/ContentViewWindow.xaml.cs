@@ -1,4 +1,8 @@
-﻿using Clippy.Common;
+﻿/// Clippy - File: "ContentViewWindow.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using Clippy.Common;
 using Clippy.Interfaces;
 using Clippy.Resources;
 using System;
@@ -27,7 +31,7 @@ namespace Clippy.UiElements
 
             switch (m_item.Type)
             {
-                case Common.DataKind.PlainText:
+                case DataKind.PlainText:
                     TextEditorPage textEditor = new TextEditorPage(((PlainTextItem)m_item).GetText());
                     textEditor.FontComboBox.IsEnabled = false;
                     textEditor.FontComboBox.Visibility = Visibility.Collapsed;
@@ -38,10 +42,10 @@ namespace Clippy.UiElements
 
                     ContentFrame.Navigate(textEditor);
                     break;
-                case Common.DataKind.Image:
+                case DataKind.Image:
                     ContentFrame.Navigate(new ImageViewerPage(((ImageItem)m_item).GetImage()));
                     break;
-                case Common.DataKind.Undefined:
+                case DataKind.Undefined:
                     throw new InvalidOperationException("Undefined clipboard item type");
                 default:
                     throw new InvalidOperationException("Unkown clipboard item type");
@@ -66,20 +70,28 @@ namespace Clippy.UiElements
             {
                 Close();
             }
+
+            if (e.Key == Key.F2)
+            {
+                CommitChanges();
+                Close();
+            }
+
+            if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && e.Key == Key.S)
+            {
+                CommitChanges();
+            }
         }
 
         private void CommitButton_Click(object sender, RoutedEventArgs e)
         {
-            m_item.Title = TitleLabel.Text;
+            CommitChanges();
+        }
 
-            switch (m_item.Type)
-            {
-                case Common.DataKind.PlainText:
-                    ((PlainTextItem)m_item).UpdateText(((TextEditorPage)ContentFrame.Content).GetText());
-                    break;
-            }
-
-            ContentChanged = true;
+        private void CommitAndCloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            CommitChanges();
+            Close();
         }
 
         private void ContentPreviewWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -89,11 +101,25 @@ namespace Clippy.UiElements
                 ClippySettings.Instance.SaveWindowLayout(this);
                 switch (m_item.Type)
                 {
-                    case Common.DataKind.PlainText:
+                    case DataKind.PlainText:
                        ClippySettings.Instance.FontSize = ((TextEditorPage)ContentFrame.Content).MainTextbox.FontSize;
                        break;
                 }
             }
+        }
+
+        private void CommitChanges()
+        {
+            m_item.Title = TitleLabel.Text;
+
+            switch (m_item.Type)
+            {
+                case DataKind.PlainText:
+                    ((PlainTextItem)m_item).UpdateText(((TextEditorPage)ContentFrame.Content).GetText());
+                    break;
+            }
+
+            ContentChanged = true;
         }
     }
 }

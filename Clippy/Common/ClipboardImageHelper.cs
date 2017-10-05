@@ -1,4 +1,8 @@
-﻿using System;
+﻿/// Clippy - File: "ClipboardImageHelper.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;

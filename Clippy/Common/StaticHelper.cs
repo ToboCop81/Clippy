@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Clippy.Common
@@ -27,22 +29,57 @@ namespace Clippy.Common
             return isNum;
         }
 
-        /// <summary>
-        /// Checks if given filename contains forbidden characters ( \ / : * ? ...)
-        ///</summary>
-        /// <param name="filename">The filename to check. Do only give the filename - not a path!</param>
-        /// <returns>bool</returns>
-        public static bool CheckForbiddenFilenameChars(string filename)
+        public static bool ValidateFileNameAndPath(string file)
         {
-            Regex forbidden = new Regex(@"[\\/:*?""<>|]");
-            if (forbidden.IsMatch(filename, 0))
-            {
-                return true;
+            string trimmedName = file.Trim();
+            if (string.IsNullOrEmpty(trimmedName)) { return false; }
+
+            Regex forbiddenFileChars = new Regex("[" + Regex.Escape(new string(Path.GetInvalidFileNameChars())) + "]");
+            // We only have a filename - no path
+            if (!trimmedName.Contains("\\") || trimmedName.Length < 4)
+            {          
+                if (forbiddenFileChars.IsMatch(trimmedName, 0))
+                {
+                    return false;
+                }
             }
-            else
+
+            //Now check path and filename
+            FileInfo fi = new FileInfo(trimmedName);
+            Regex forbiddenPathChars = new Regex("[" + Regex.Escape(new string(Path.GetInvalidPathChars())) + "]");
+            if (forbiddenPathChars.IsMatch(fi.DirectoryName))
             {
                 return false;
             }
+
+            if (forbiddenFileChars.IsMatch(fi.Name))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Detect encoding of textfile by BOM
+        /// </summary>
+        public static Encoding GetFileEncoding(string srcFile)
+        {
+            Encoding encoding = Encoding.Default;
+
+            byte[] bom = new byte[4];
+            using (FileStream fileStream = new FileStream(srcFile, FileMode.Open))
+            {
+                fileStream.Read(bom, 0, 4);
+                fileStream.Close();
+            }
+
+            if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) { encoding = Encoding.UTF8; }
+            else if (bom[0] == 0x2b && bom[1] == 0x2f && bom[2] == 0x76) { encoding = Encoding.UTF7; }
+            else if (bom[0] == 0xfe && bom[1] == 0xff) { encoding = Encoding.Unicode; }
+            else if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff) { encoding = Encoding.UTF32; }
+                      
+            return encoding;
         }
     }
 }

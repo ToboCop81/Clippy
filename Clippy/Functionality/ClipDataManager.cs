@@ -1,4 +1,8 @@
-﻿using Clippy.Common;
+﻿/// Clippy - File: "ClipDataManager.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using Clippy.Common;
 using Clippy.Interfaces;
 using Clippy.Resources;
 using System;
@@ -7,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -110,21 +115,12 @@ namespace Clippy.Functionality
             {
                 case DataKind.PlainText:
                     m_idCounter++;
-                    PlainTextItem newPlainText = new PlainTextItem(m_idCounter, Clipboard.GetText());
-                    if (ClippySettings.Instance.TextItemNameFromContent)
-                    {
-                        newPlainText.Title = GetTextTeaser(newPlainText.GetText(), 25);
-                    }
-
-                    m_items.Add(newPlainText);
-                    ItemsChanged(ItemsChangeType.ItemAdded, new ItemsChangedEventArgs(newPlainText));
+                    AddPlainTextItem(m_idCounter, Clipboard.GetText());
                     break;
 
                 case DataKind.Image:
                     m_idCounter++;
-                    ImageItem newImage = new ImageItem(m_idCounter, ClipboardImageHelper.ImageFromClipboardDib() as BitmapSource);
-                    ItemsChanged(ItemsChangeType.ItemAdded, new ItemsChangedEventArgs(newImage));
-                    m_items.Add(newImage);
+                    AddImageItem(m_idCounter, ClipboardImageHelper.ImageFromClipboardDib() as BitmapSource);
                     break;
 
                 default:
@@ -133,6 +129,61 @@ namespace Clippy.Functionality
 
             m_status = "Added item from clipboard";
             return true;
+        }
+
+
+        /// <summary>
+        /// Adds data from a file to the items list
+        /// </summary>
+        /// <param name="type">The type of data (currently only plain text)</param>
+        /// <returns>
+        /// TRUE when data was added
+        /// FALSE when file was empty or type is not supported
+        /// </returns>
+        public bool GetDataFromFile(DataKind type)
+        {
+            if (type != DataKind.PlainText)
+            {
+                m_status = $"Failed to get data from file. Item type '{type}' not supported.";
+                return false;
+            }
+
+            string content = GetPlainTextFromFile();
+            if (string.IsNullOrEmpty(content))
+            {
+                if (!ClippySettings.Instance.AllowEmptyClipboardFiles)
+                {
+                    m_status = $"Unable to get the text from a file. The file content is null or empty";
+                    return false;
+                }
+
+                content = string.Empty;
+            }
+
+            InitializeItems();
+            m_idCounter++;
+            AddPlainTextItem(m_idCounter,content);
+
+            return true;
+        }
+
+        public bool WriteDataToFile(long index)
+        {
+            IClipboardItem matchingItem = m_items.FirstOrDefault(i => i.Index == index);
+            if (matchingItem == null)
+            {
+                m_status = $" Failed to write data to file. No item with index '{index}' found.";
+                return false;
+            }
+
+            if (matchingItem.Type != DataKind.PlainText)
+            {
+                m_status = $"Failed to get data from file. Item type '{matchingItem.Type}' not supported.";
+                return false;
+            }
+
+            string text = ((PlainTextItem)matchingItem).GetText();
+            return WriteTextToFile(text);
         }
 
         /// <summary>
@@ -153,7 +204,7 @@ namespace Clippy.Functionality
                 return false;
             }
 
-            ItemsChangedEventArgs args = new ItemsChangedEventArgs(matchingItem);
+            ClipboardItemEventArgs args = new ClipboardItemEventArgs(matchingItem);
             m_items.Remove(matchingItem);
             ItemsChanged(ItemsChangeType.ItemRemoved, args);
             m_status = $"Removed item with index '{index}'";
@@ -315,6 +366,71 @@ namespace Clippy.Functionality
             return true;
         }
 
+        private bool WriteTextToFile(string text)
+        {
+            string textoWrite = text;
+            string fileName = ClippySettings.Instance.ClipboardTextFileName;
+            if (string.IsNullOrEmpty(fileName))
+            {
+                m_status = $"Unable to write the text to a file. The filename is null or empty";
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(textoWrite))
+            {
+                if (!ClippySettings.Instance.AllowEmptyClipboardFiles)
+                {
+                    m_status = $"Unable to write the text to a file. The content is null or empty";
+                    return false;
+                }
+
+                textoWrite = string.Empty;
+            }
+
+            Encoding encoding = Encoding.GetEncoding(ClippySettings.Instance.ClipboardTextFileEncoding);
+            m_status = $"Writing text to '{fileName}'...";
+
+            try
+            {
+                File.WriteAllText(fileName, textoWrite, encoding);
+            }
+            catch (Exception ex)
+            {
+                m_status = $"Failed to write the text to the file: {ex.Message}";
+                return false;
+            }
+
+            m_status = "Text successfully written to file.";
+            return true;
+        }
+
+        private string GetPlainTextFromFile()
+        {
+            string fileName = ClippySettings.Instance.ClipboardTextFileName;
+            if (!File.Exists(fileName))
+            {
+                m_status = $"Unable to get the text from the file. The file was not found.";
+                return null;
+            }
+
+            m_status = $"Getting text from '{fileName}'...";
+
+            Encoding encoding = Encoding.GetEncoding(ClippySettings.Instance.ClipboardTextFileEncoding);
+            string content = null;
+            try
+            {
+                content = File.ReadAllText(fileName, encoding);
+            }
+            catch (Exception ex)
+            {
+                m_status = $"Failed to get the text from the file: {ex.Message}";
+                return null;
+            }
+
+            m_status = "Text successfully retrieved from file.";
+            return content;
+        }
+
         /// <summary>
         /// Checks if the clipboard conains supported data
         /// </summary>
@@ -333,8 +449,27 @@ namespace Clippy.Functionality
                 return true;
             }
 
-            m_status = "No supported dabta in clipboard or clipboard is empty";
+            m_status = "No supported data in clipboard or clipboard is empty";
             return false;
+        }
+
+        private void AddPlainTextItem(long id, string text)
+        {
+            PlainTextItem newPlainText = new PlainTextItem(id, text);
+            if (ClippySettings.Instance.TextItemNameFromContent && !string.IsNullOrEmpty(text))
+            {
+                newPlainText.Title = GetTextTeaser(newPlainText.GetText(), 25);
+            }
+
+            m_items.Add(newPlainText);
+            ItemsChanged(ItemsChangeType.ItemAdded, new ClipboardItemEventArgs(newPlainText));
+        }
+
+        private void AddImageItem(long counter, BitmapSource image)
+        {
+            ImageItem newImage = new ImageItem(counter, image);
+            ItemsChanged(ItemsChangeType.ItemAdded, new ClipboardItemEventArgs(newImage));
+            m_items.Add(newImage);
         }
 
         private void InitializeItems()
@@ -353,7 +488,7 @@ namespace Clippy.Functionality
             if (string.IsNullOrEmpty(text)) { return text; }
             if (maxLength < 5) { maxLength = 5; }
 
-            string returnText = text.Trim();
+            string returnText = text.Replace(Environment.NewLine, " ").Trim();
             if (returnText.Length <= maxLength)
             {
                 if (returnText == text) { return returnText; }

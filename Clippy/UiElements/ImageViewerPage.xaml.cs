@@ -1,4 +1,8 @@
-﻿using System.Windows.Controls;
+﻿/// Clippy - File: "ImageViewerPage.cs"
+/// Copyright © 2017 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;

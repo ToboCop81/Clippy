@@ -71,7 +71,7 @@
     <Compile Include="Common\ClippySettings.cs" />
     <Compile Include="Common\LogfileHandler.cs" />
     <Compile Include="Common\StaticHelper.cs" />
-    <Compile Include="Functionality\Events.cs" />
+    <Compile Include="Common\Events.cs" />
     <Compile Include="Functionality\SettingsManager.cs" />
     <Compile Include="Resources\ClipboardItemBase.cs" />
     <Compile Include="Resources\ImageItem.cs" />
@@ -85,6 +85,9 @@
     </Compile>
     <Compile Include="UiElements\ImageViewerPage.xaml.cs">
       <DependentUpon>ImageViewerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UiElements\SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UiElements\TermsOfUseWindow.xaml.cs">
       <DependentUpon>TermsOfUseWindow.xaml</DependentUpon>
@@ -118,6 +121,10 @@
     <Page Include="UiElements\ImageViewerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UiElements\SettingsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UiElements\TermsOfUseWindow.xaml">
       <SubType>Designer</SubType>
@@ -171,6 +178,17 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Graphics\Edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Graphics\CopyFromFile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Graphics\CopyToFile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Graphics\Close.png" />
+    <Resource Include="Graphics\Commit.png" />
+    <Resource Include="Graphics\CommitAndClose.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
