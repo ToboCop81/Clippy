@@ -1,4 +1,8 @@
-﻿using Clippy.Common;
+﻿/// Clippy - File: "MainWindow.xaml.cs"
+/// Copyright © 2018 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using Clippy.Common;
 using Clippy.Functionality;
 using Clippy.Interfaces;
 using Clippy.UiElements;
@@ -6,8 +10,6 @@ using Microsoft.Win32;
 using System;
 using System.Windows;
 using System.Windows.Input;
-using System.Linq;
-using System.Windows.Controls;
 
 namespace Clippy
 {
@@ -46,6 +48,7 @@ namespace Clippy
 
         private void ApplySettings()
         {
+            Topmost = ClippySettings.Instance.MainWindowAlwaysOnTop;
             ButtonGetFromFile.Visibility = ClippySettings.Instance.UseClipboardFiles ? Visibility.Visible : Visibility.Collapsed;
             UpdateItemsList();
         }
@@ -128,7 +131,6 @@ namespace Clippy
             if (result == MessageBoxResult.Yes)
             {
                 ClipDataManager.Instance.RemoveSelectedItems();
-                ListBoxClipboardItems.Items.Clear();
                 GC.Collect();
             }
         }
@@ -186,9 +188,30 @@ namespace Clippy
 
         private void ClippyMainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.F5)
+            switch (e.Key)
             {
-                UpdateItemsList();
+                case Key.F2:
+                    HandleSelectedItem(ItemAction.ItemEdit);
+                    break;
+
+                case Key.F5:
+                    UpdateItemsList();
+                    break;
+
+                case Key.F6:
+                    HandleSelectedItem(ItemAction.ItemCopy);
+                    break;
+
+                case Key.F7:
+                    HandleSelectedItem(ItemAction.ItemFileCopy);
+                    break;
+
+                case Key.Delete:
+                    HandleSelectedItem(ItemAction.ItemDelete);
+                    break;
+
+                default:
+                    break;
             }
         }
 
@@ -283,5 +306,44 @@ namespace Clippy
             ItemCountLabel.Content = ClipDataManager.Instance.Items.Count;
         }
 
+        private void HandleSelectedItem(ItemAction action)
+        {
+            if (ClipDataManager.Instance.Items.Count == 0 || ListBoxClipboardItems.SelectedIndex == -1) return;
+
+            IClipboardItem selectedItem = ListBoxClipboardItems.SelectedItem as IClipboardItem;
+            if (selectedItem == null) return;
+
+            switch (action)
+            {
+                case ItemAction.ItemCopy:
+                    selectedItem.CopyToClipboard();
+                    break;
+                case ItemAction.ItemFileCopy:
+                    if (selectedItem.Type == DataKind.PlainText && ClippySettings.Instance.UseClipboardFiles)
+                    {
+                        if (!ClipDataManager.Instance.WriteDataToFile(selectedItem.Index))
+                        {
+                            MessageBox.Show(
+                                "Saving failed: " + Environment.NewLine + ClipDataManager.Instance.Status, Title + " - Save content to file...",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                        }
+                    }
+                    break;
+                case ItemAction.ItemEdit:
+                    ContentViewWindow contentViewWindow = new ContentViewWindow(selectedItem);
+                    contentViewWindow.ShowDialog();
+                    if (contentViewWindow.ContentChanged)
+                    {
+                        ListBoxClipboardItems.Items.Refresh();
+                    }
+                    break;
+                case ItemAction.ItemDelete:
+                    ClipDataManager.Instance.RemoveItem(selectedItem.Index);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

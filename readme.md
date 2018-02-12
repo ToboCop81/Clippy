@@ -29,3 +29,12 @@ Clippy is a tool which is designed to get content from the clipoard and holding 
 * Added support for plain text clipboard file
 * Updated icons
 * Improved usability (better keyboard control)
+
+### Version 1.3
+
+* Added more keyboard shortcuts to edit/delete/copy selected item
+* Fixed crash when selecting "Remove selected items" and no items are selected
+
+## Download
+
+Current Version: [Clippy V1.3.0.0](https://github.com/scullhead/Clippy/raw/master/Builds/Clippy_V1.3.0.0.zip)

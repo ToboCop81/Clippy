@@ -1,5 +1,5 @@
-﻿/// Clippy - File: "ImageViewerPage.cs"
-/// Copyright © 2017 by Tobias Zorn
+﻿/// Clippy - File: "ImageViewerPage.xaml.cs"
+/// Copyright © 2018 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using System.Windows.Controls;

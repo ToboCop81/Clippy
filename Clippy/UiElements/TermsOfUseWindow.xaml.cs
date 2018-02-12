@@ -1,5 +1,5 @@
-﻿/// Clippy - File: "TermsOfUseWindow.cs"
-/// Copyright © 2017 by Tobias Zorn
+﻿/// Clippy - File: "TermsOfUse.xaml.cs"
+/// Copyright © 2018 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using System.Diagnostics;

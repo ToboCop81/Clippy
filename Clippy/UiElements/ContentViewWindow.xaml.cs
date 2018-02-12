@@ -1,5 +1,5 @@
-﻿/// Clippy - File: "ContentViewWindow.cs"
-/// Copyright © 2017 by Tobias Zorn
+﻿/// Clippy - File: "ContentViewWindow.xaml.cs"
+/// Copyright © 2018 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Common;

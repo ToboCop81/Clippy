@@ -22,6 +22,7 @@
         <StackPanel Margin="10" Grid.Row="0">
             <GroupBox Header="General Settings">
                 <StackPanel Margin="5">
+                    <CheckBox x:Name="CheckBoxAlwaysOnTop" Content="Main window always on top" />
                     <CheckBox x:Name="CheckBoxAutosaveItems" Content="Autosave items list" />
                     <CheckBox x:Name="CheckBoxAutosaveWindowLayout" Content="Autosave window layout" />
                     <CheckBox x:Name="CheckBoxTextItemNameFromContent" Content="Generate text item names from content" />

@@ -14,7 +14,7 @@
       Title="ImageViewerPage">
     <Grid>
         <ScrollViewer x:Name="ImageScrollViewer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" >
-            <Image x:Name="MainImage" Stretch="None" MouseWheel="MainImage_MouseWheel" />
+            <Image x:Name="MainImage" Stretch="None" MouseWheel="MainImage_MouseWheel" SnapsToDevicePixels="True" />
         </ScrollViewer>
     </Grid>
 </Page>

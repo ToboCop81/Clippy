@@ -1,5 +1,5 @@
-﻿/// Clippy - File: "SettingsWindow.cs"
-/// Copyright © 2017 by Tobias Zorn
+﻿/// Clippy - File: "SettingsWindow.xaml.cs"
+/// Copyright © 2018 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Common;
@@ -122,6 +122,7 @@ namespace Clippy.UiElements
         private void RestoreSettings()
         {
             // General settings
+            CheckBoxAlwaysOnTop.IsChecked = ClippySettings.Instance.MainWindowAlwaysOnTop;
             CheckBoxAutosaveWindowLayout.IsChecked = ClippySettings.Instance.SaveWindowLayoutState;
             CheckBoxAutosaveItems.IsChecked = ClippySettings.Instance.AutoSaveState;
             CheckBoxTextItemNameFromContent.IsChecked = ClippySettings.Instance.TextItemNameFromContent;
@@ -142,6 +143,7 @@ namespace Clippy.UiElements
         private void ApplySettings()
         {
             // General settings
+            ClippySettings.Instance.MainWindowAlwaysOnTop = CheckBoxAlwaysOnTop.IsChecked.Value;
             ClippySettings.Instance.SaveWindowLayoutState = CheckBoxAutosaveWindowLayout.IsChecked.Value;
             ClippySettings.Instance.AutoSaveState = CheckBoxAutosaveItems.IsChecked.Value;
             ClippySettings.Instance.TextItemNameFromContent = CheckBoxTextItemNameFromContent.IsChecked.Value;

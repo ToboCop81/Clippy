@@ -20,17 +20,17 @@
             <TextBox x:Name="NameBox" Height="22" VerticalContentAlignment="Center" Margin="25,3,5,3" AllowDrop="False" MaxLines="1" TextChanged="NameBox_TextChanged" />
             <CheckBox x:Name="SelectBox" Margin="5,7,0,5" Grid.Row="0" RenderTransformOrigin="0.033,0.382" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Checked="SelectBox_CheckedChanged" Unchecked="SelectBox_CheckedChanged" />
             <Label x:Name="ItemTypeLabel" Margin="5,0,110,0" VerticalAlignment="Bottom" Height="28" HorizontalContentAlignment="Stretch" Grid.Row="1" Content="Type"/>
-            <Button x:Name="CopyButton" HorizontalAlignment="Right" Margin="0,0,5,3"  Grid.Row="1" VerticalAlignment="Bottom" Width="32" Height="22" HorizontalContentAlignment="Center" Click="CopyButton_Click" ToolTip="Copy to clipboard" >
-                <Image x:Name="copyImage" Source="/Clippy;component/Graphics/Copy.png" Height="16" />
+            <Button x:Name="CopyButton" HorizontalAlignment="Right" Margin="0,0,5,3"  Grid.Row="1" VerticalAlignment="Bottom" Width="32" Height="22" HorizontalContentAlignment="Center" Click="CopyButton_Click" ToolTip="Copy to clipboard (F6)" >
+                <Image x:Name="copyImage" Source="/Clippy;component/Graphics/Copy.png" Height="16" SnapsToDevicePixels="True" />
             </Button>
-            <Button x:Name="CopyFileButton" HorizontalAlignment="Right" Margin="0,0,40,3"  Grid.Row="1" VerticalAlignment="Bottom" Width="32" Height="22" HorizontalContentAlignment="Center" Click="CopyFileButton_Click" ToolTip="Copy to file" >
-                <Image x:Name="copyFileImage" Source="/Clippy;component/Graphics/CopyToFile.png" Height="16" />
+            <Button x:Name="CopyFileButton" HorizontalAlignment="Right" Margin="0,0,40,3"  Grid.Row="1" VerticalAlignment="Bottom" Width="32" Height="22" HorizontalContentAlignment="Center" Click="CopyFileButton_Click" ToolTip="Copy to file (F7)" >
+                <Image x:Name="copyFileImage" Source="/Clippy;component/Graphics/CopyToFile.png" Height="16" SnapsToDevicePixels="True" />
             </Button>
-            <Button x:Name="EditButton" HorizontalAlignment="Right" Margin="0,0,81,3" Grid.Row="1" VerticalAlignment="Bottom" Width="24" Height="22" Click="EditButton_Click" ToolTip="View / Edit" >
-                <Image x:Name="editImage" Source="/Clippy;component/Graphics/Edit.png" Height="16" />
+            <Button x:Name="EditButton" HorizontalAlignment="Right" Margin="0,0,81,3" Grid.Row="1" VerticalAlignment="Bottom" Width="24" Height="22" Click="EditButton_Click" ToolTip="View / Edit (F2)" >
+                <Image x:Name="editImage" Source="/Clippy;component/Graphics/Edit.png" Height="16" SnapsToDevicePixels="True" />
             </Button>
-            <Button x:Name="DeleteButton" HorizontalAlignment="Right" Margin="0,0,110,3" Grid.Row="1" VerticalAlignment="Bottom" Width="24" Height="22" Click="DeleteButton_Click" ToolTip="Delete" >
-                <Image x:Name="deleteImage" Source="/Clippy;component/Graphics/Delete.png" Height="16" />
+            <Button x:Name="DeleteButton" HorizontalAlignment="Right" Margin="0,0,110,3" Grid.Row="1" VerticalAlignment="Bottom" Width="24" Height="22" Click="DeleteButton_Click" ToolTip="Delete (DEL)" >
+                <Image x:Name="deleteImage" Source="/Clippy;component/Graphics/Delete.png" Height="16" SnapsToDevicePixels="True" />
             </Button>
         </Grid>
     </Border>

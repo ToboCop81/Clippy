@@ -1,5 +1,5 @@
 ﻿/// Clippy - File: "ClippySettings.cs"
-/// Copyright © 2017 by Tobias Zorn
+/// Copyright © 2018 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Functionality;
@@ -17,6 +17,7 @@ namespace Clippy.Common
         private bool m_saveWindowLayout;
         private bool m_useClipboardFiles;
         private bool m_allowEmptyClipboardFiles;
+        private bool m_mainWindowAlwaysOnTop;
         private double m_FontSize;
         private string m_clipboardTextFileName;
         private int m_clipboardTextFileEncoding;
@@ -37,11 +38,12 @@ namespace Clippy.Common
             public const string ClipboardTextFileName = "ClipboardTextFileName";
             public const string ClipboardTextFileEncoding = "ClipboardTextFileEncoding";
             public const string EmptyClipboardFileAllowed = "EmptyClipboardFileAllowed";
+            public const string MainWindowAlwaysOnTop = "MainWindowAlwaysOnTop";
 
             /// <summary>
             /// Count of settings. Increase this value if a new setting is added
             /// </summary>
-            public const int Count = 16;
+            public const int Count = 17;
         }
 
         private ClippySettings() { }
@@ -120,6 +122,19 @@ namespace Clippy.Common
                 if (m_initialized)
                 {
                     SettingsManager.Instance.UpdateSetting(SettingNames.EmptyClipboardFileAllowed, m_allowEmptyClipboardFiles);
+                }
+            }
+        }
+
+        public bool MainWindowAlwaysOnTop
+        {
+            get { return m_mainWindowAlwaysOnTop; }
+            set
+            {
+                m_mainWindowAlwaysOnTop = value;
+                if (m_initialized)
+                {
+                    SettingsManager.Instance.UpdateSetting(SettingNames.MainWindowAlwaysOnTop, m_mainWindowAlwaysOnTop);
                 }
             }
         }
@@ -266,6 +281,7 @@ namespace Clippy.Common
                 m_clipboardTextFileName = (string)SettingsManager.Instance.GetValue(SettingNames.ClipboardTextFileName);
                 m_clipboardTextFileEncoding = (int)SettingsManager.Instance.GetValue(SettingNames.ClipboardTextFileEncoding);
                 m_allowEmptyClipboardFiles = (bool)SettingsManager.Instance.GetValue(SettingNames.EmptyClipboardFileAllowed);
+                m_mainWindowAlwaysOnTop = (bool)SettingsManager.Instance.GetValue(SettingNames.MainWindowAlwaysOnTop);
 
             }
             catch (NullReferenceException)
@@ -284,6 +300,7 @@ namespace Clippy.Common
             SettingsManager.Instance.AddSetting(SettingNames.SaveWindow, true);
             SettingsManager.Instance.AddSetting(SettingNames.UseClipboardFiles, false);
             SettingsManager.Instance.AddSetting(SettingNames.EmptyClipboardFileAllowed, false);
+            SettingsManager.Instance.AddSetting(SettingNames.MainWindowAlwaysOnTop, false);
             SettingsManager.Instance.AddSetting(SettingNames.MainWindowName + SettingNames.WindowLeft, (double)-1);
             SettingsManager.Instance.AddSetting(SettingNames.MainWindowName + SettingNames.WindowTop, (double)-1);
             SettingsManager.Instance.AddSetting(SettingNames.MainWindowName + SettingNames.WindowWidth, (double)230);

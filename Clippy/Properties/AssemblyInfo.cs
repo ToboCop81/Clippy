@@ -1,4 +1,8 @@
-﻿using System.Resources;
+﻿/// Clippy - File: "AssemblyInfo.cs"
+/// Copyright © 2018 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using System.Resources;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -11,7 +15,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Clippy")]
-[assembly: AssemblyCopyright("Copyright © Tobias Zorn 2017")]
+[assembly: AssemblyCopyright("Copyright © Tobias Zorn 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -50,7 +54,8 @@ using System.Windows;
 // Sie können alle Werte angeben oder Standardwerte für die Build- und Revisionsnummern verwenden,
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2.0.0")]
-[assembly: AssemblyFileVersion("1.2.0.0")]
+[assembly: AssemblyVersion("1.3.0.0")]
+[assembly: AssemblyFileVersion("1.3.0.0")]
 [assembly: NeutralResourcesLanguage("en")]
+[assembly: Guid("037C002E-F3FE-4DCC-B41A-7EFF955FCFD1")]
 

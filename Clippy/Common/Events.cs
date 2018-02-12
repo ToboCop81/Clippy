@@ -1,5 +1,5 @@
 ﻿/// Clippy - File: "Events.cs"
-/// Copyright © 2017 by Tobias Zorn
+/// Copyright © 2018 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Interfaces;
