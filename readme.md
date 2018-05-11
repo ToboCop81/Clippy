@@ -18,23 +18,6 @@ Clippy is a tool which is designed to get content from the clipoard and holding 
 * **It is not recommended to use Clippy to store passwords or any other confidential information!** (The data in the autosave file or other files created with this tool is not encrypted)
 * This program is licensed under [GNU GENERAL PUBLIC LICENSE](http://www.gnu.org/licenses)
 
-## Change log:
-
-### Version 1.0
-
-* Initial release
-
-### Version 1.2
-
-* Added support for plain text clipboard file
-* Updated icons
-* Improved usability (better keyboard control)
-
-### Version 1.3
-
-* Added more keyboard shortcuts to edit/delete/copy selected item
-* Fixed crash when selecting "Remove selected items" and no items are selected
-
-## Download
-
-Current Version: [Clippy V1.3.0.0](https://github.com/scullhead/Clippy/raw/master/Builds/Clippy_V1.3.0.0.zip)
+## Current Version
+Clippy V1.4.0.0
+See changelog.md for more details
