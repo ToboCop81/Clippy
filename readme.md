@@ -21,4 +21,4 @@ Clippy is a tool which is designed to get content from the clipoard and holding 
 ## Current Version
 Clippy V1.4.0.0 - See changelog.md for more details
 
-Download latest version !(https://github.com/scullhead/Clippy/releases)here
+Download latest version [in the releases section](https://github.com/scullhead/Clippy/releases)
