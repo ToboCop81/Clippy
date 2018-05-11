@@ -21,17 +21,6 @@ namespace Clippy.Resources
             m_data = ClipboardImageHelper.BitmapSourceToByteArray(new PngBitmapEncoder(), image);
         }
 
-        public override void CopyToClipboard()
-        {
-            if (Data == null)
-            {
-                return;
-            }
-
-            BitmapSource source = ClipboardImageHelper.ByteArrayToBitmapSource(Data as byte[]);
-            Clipboard.SetImage(source);
-        }
-
         public void UpdateImage(BitmapSource image)
         {
             m_data = ClipboardImageHelper.BitmapSourceToByteArray(new PngBitmapEncoder(), image);

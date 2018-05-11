@@ -20,12 +20,16 @@ namespace Clippy
     {
         private bool m_hasStartupArgs;
         private string[] m_startupArgs;
+        private AsyncPipeServer m_pipeServer;
+
+        public delegate void ServerMessageInvoker(string content);
 
         public MainWindow(bool hasStartupArgs = false, string[] startupArgs = null)
         {
             m_hasStartupArgs = hasStartupArgs;
             m_startupArgs = startupArgs;
-
+            m_pipeServer = new AsyncPipeServer();
+            m_pipeServer.MessageRecieved += new ServerMessage(MessageRecievedHandler);
             InitializeComponent();
             ClippySettings.Instance.InitializeSettings();
             ClipDataManager.Instance.ItemsChanged += ItemsChangedHandler;
@@ -34,6 +38,8 @@ namespace Clippy
 
             LoadItemsList();
             ApplySettings();
+            string pipeName = StaticHelper.GetPipeName();
+            m_pipeServer.Listen(pipeName);
         }
 
         private void SetupWindow()
@@ -57,10 +63,11 @@ namespace Clippy
         {
             if (m_hasStartupArgs)
             {
-                bool extOk = m_startupArgs[0].ToLower().EndsWith("." + ClipDataManager.Instance.FileExtension);
+                string startupFilename = String.Join(" ", m_startupArgs).Trim();
+                bool extOk = startupFilename.ToLower().EndsWith("." + ClipDataManager.Instance.FileExtension);
                 if (extOk)
                 {
-                    ClipDataManager.Instance.LoadList(m_startupArgs[0]);
+                    ClipDataManager.Instance.LoadList(startupFilename);
                 }
             }
 
@@ -72,7 +79,42 @@ namespace Clippy
 
         private void ShutdownProgram()
         {
-            Application.Current.Shutdown();
+            Environment.Exit(Environment.ExitCode);
+        }
+
+        // Event when another instance of clippy was started and sent file name to open
+        private void MessageRecievedHandler(string content)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new ServerMessageInvoker(MessageRecievedHandler), content);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(content)) return;
+
+            content = StaticHelper.Base64Decode(content);
+            bool extOk = content.ToLower().EndsWith("." + ClipDataManager.Instance.FileExtension);
+            if (!extOk)
+            {
+                return;
+            }
+
+            if (ClipDataManager.Instance.Items.Count > 0)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                   $"The list is not empty. Do you want to load a new list from the file '{content}' and dismiss this one?",
+                    $"{Title}: Confirm Loading",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }            
+            }
+
+            ClipDataManager.Instance.LoadList(content);
         }
 
         private void MenuItemExit_Click(object sender, RoutedEventArgs e)
@@ -134,7 +176,7 @@ namespace Clippy
                 GC.Collect();
             }
         }
-        
+
         private void ButtonGetFromClipboard_Click(object sender, RoutedEventArgs e)
         {
             ClipDataManager.Instance.GetDataFromClipboard();
@@ -153,7 +195,14 @@ namespace Clippy
                 switch (action)
                 {
                     case ItemAction.ItemCopy:
-                        currentItem.CopyToClipboard();
+                        if (!ClipDataManager.Instance.CopyDataToClipboard(currentItem))
+                        {
+                            MessageBox.Show(ClipDataManager.Instance.Status,
+                                $"{Title}: Copy to clipboard failed",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                        }
+
                         break;
                     case ItemAction.ItemFileCopy:
                         if (!ClipDataManager.Instance.WriteDataToFile(currentItem.Index))
@@ -244,6 +293,10 @@ namespace Clippy
             {
                 ClippySettings.Instance.SaveWindowLayout(this);
             }
+
+            m_pipeServer.MessageRecieved -= new ServerMessage(MessageRecievedHandler);
+            m_pipeServer.Shutdown();
+            m_pipeServer = null;
         }
 
         private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e)
@@ -264,7 +317,7 @@ namespace Clippy
             saveFileDialog.Filter = $"Clippy list file (*.{ext})|*.{ext}";
             saveFileDialog.Title = Title + " - Save clipboard list...";
 
-            if (saveFileDialog.ShowDialog() == true  && !string.IsNullOrEmpty(saveFileDialog.FileName))
+            if (saveFileDialog.ShowDialog() == true && !string.IsNullOrEmpty(saveFileDialog.FileName))
             {
                 bool result = ClipDataManager.Instance.SaveList(saveFileDialog.FileName);
                 if (result == false)
@@ -316,8 +369,15 @@ namespace Clippy
             switch (action)
             {
                 case ItemAction.ItemCopy:
-                    selectedItem.CopyToClipboard();
+                    if (!ClipDataManager.Instance.CopyDataToClipboard(selectedItem))
+                    {
+                        MessageBox.Show(ClipDataManager.Instance.Status,
+                            $"{Title}: Copy to clipboard failed",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    }
                     break;
+
                 case ItemAction.ItemFileCopy:
                     if (selectedItem.Type == DataKind.PlainText && ClippySettings.Instance.UseClipboardFiles)
                     {
@@ -330,6 +390,7 @@ namespace Clippy
                         }
                     }
                     break;
+
                 case ItemAction.ItemEdit:
                     ContentViewWindow contentViewWindow = new ContentViewWindow(selectedItem);
                     contentViewWindow.ShowDialog();
@@ -338,6 +399,7 @@ namespace Clippy
                         ListBoxClipboardItems.Items.Refresh();
                     }
                     break;
+
                 case ItemAction.ItemDelete:
                     ClipDataManager.Instance.RemoveItem(selectedItem.Index);
                     break;

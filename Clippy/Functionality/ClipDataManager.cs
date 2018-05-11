@@ -95,6 +95,9 @@ namespace Clippy.Functionality
             get { return s_fileExtension; }
         }
 
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern IntPtr CloseClipboard();
+
         /// <summary>
         /// Gets data from clipboard and adds it to the items list
         /// </summary>
@@ -131,6 +134,90 @@ namespace Clippy.Functionality
             return true;
         }
 
+        /// <summary>
+        /// Copies the data of the given item to the clipboard
+        /// </summary>
+        /// <param name="index">Index of the clipboard item</param>
+        /// <returns></returns>
+        public bool CopyDataToClipboard(long index)
+        {
+            IClipboardItem matchingItem = m_items.FirstOrDefault(i => i.Index == index);
+            if (matchingItem == null)
+            {
+                m_status = $" Failed to copy data to the clipboard. No item with index '{index}' found.";
+                return false;
+            }
+
+            return CopyDataToClipboard(matchingItem);
+        }
+
+        /// <summary>
+        /// Copies the data of the given item to the clipboard
+        /// </summary>
+        public bool CopyDataToClipboard(IClipboardItem itemToCopy)
+        {
+            if (!itemToCopy.HasData)
+            {
+                m_status = $" Failed to copy data to the clipboard. Given item has no data";
+                return false;
+            }
+
+            bool clipboardBlocked = false;
+
+            switch (itemToCopy.Type)
+            {
+                case DataKind.PlainText:
+                    try
+                    {
+                        Clipboard.SetText(((PlainTextItem)itemToCopy).GetText());
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            FreeAndClearClipboard();
+                            Clipboard.SetText(((PlainTextItem)itemToCopy).GetText());
+                        }
+                        catch (Exception)
+                        {
+                            clipboardBlocked = true;
+                        }
+                    }
+                    break;
+
+                case DataKind.Image:
+                    try
+                    {
+                        Clipboard.SetImage(((ImageItem)itemToCopy).GetImage());
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            FreeAndClearClipboard();
+                            Clipboard.SetImage(((ImageItem)itemToCopy).GetImage());
+                        }
+                        catch (Exception)
+                        {
+                            clipboardBlocked = true;
+                        }
+                    }
+                    break;
+
+                default:
+                    m_status = $" Failed to copy data to the clipboard. Unsupported item type: {itemToCopy.Type.ToString()}";
+                    return false;
+            }
+
+            if (clipboardBlocked)
+            {
+                string blockingWindow = StaticHelper.GetOpenClipboardWindowInfo();
+                m_status = $" Failed to copy data to the clipboard. Cliboard is blocked by another process: {blockingWindow}";
+                return false;
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Adds data from a file to the items list
@@ -496,6 +583,12 @@ namespace Clippy.Functionality
             }
 
             return returnText.Substring(0, maxLength) + "...";
+        }
+
+        private void FreeAndClearClipboard()
+        {
+            CloseClipboard();
+            Clipboard.Clear();
         }
     }
 }

@@ -26,15 +26,20 @@ namespace Clippy.Resources
             m_data = null;
         }
 
+        public bool HasData
+        {
+            get
+            {
+                return m_data != null;
+            }
+        }
+
         public string Title { get; set; }
         public long Index { get; set; }
         public bool Selected { get; set; }
         public bool Favorite { get; set; }
-
         public DateTime TimeStamp => m_timeStamp;
         public DataKind Type => m_type;
         public object Data => m_data;
-
-        public abstract void CopyToClipboard();
     }
 }

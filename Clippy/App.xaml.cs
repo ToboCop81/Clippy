@@ -4,6 +4,7 @@
 
 using Clippy.Common;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Windows;
@@ -20,17 +21,6 @@ namespace Clippy
         [STAThread]
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            if (!AppMutex.WaitOne(0, false))
-            {
-                MessageBox.Show("An instance of Clippy is already running", "Clippy", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            StartProgram(e);       
-        }
-
-        private void StartProgram(StartupEventArgs e)
-        {
             try
             {
                 bool hasArgs = false;
@@ -41,9 +31,33 @@ namespace Clippy
                     args = e.Args;
                 }
 
+                if (!AppMutex.WaitOne(0, false))
+                {
+                    if (!hasArgs)
+                    {
+                        MessageBox.Show("An instance of Clippy is already running", "Clippy", MessageBoxButton.OK, MessageBoxImage.Information);
+                        Environment.Exit(1);
+                    }
+
+                    string fileName = String.Join(" ", args).Trim();
+
+                    // Check if first argument is a valid file name - then send it to the already running instance and exit
+                    if (File.Exists(fileName))
+                    {
+                        fileName = StaticHelper.Base64Encode(fileName);
+                        Functionality.AsyncPlipeClient clippyPipeclient = new Functionality.AsyncPlipeClient();
+                        string pipeName = StaticHelper.GetPipeName();
+                        clippyPipeclient.SendMessage(fileName, pipeName);
+                        Debug.WriteLine("[Client] Sent filename to running instance.");
+                        clippyPipeclient = null;
+                        Environment.Exit(Environment.ExitCode);
+                    }
+                }
+
                 MainWindow mainWindow = new MainWindow(hasArgs, args);
                 MainWindow.Show();
             }
+
             catch (Exception ex)
             {
                 Console.WriteLine("Unknown exception. Program execution aborted.");
@@ -60,10 +74,20 @@ namespace Clippy
                 crashReport.AddEntry("Unknown exception. Program execution aborted. Exception details:");
                 crashReport.AddSpace();
                 crashReport.AddEntry(Environment.NewLine + ex.Message, false);
+                crashReport.AddSpace();
+                crashReport.AddEntry("Call stack:");
+                crashReport.AddEntry(ex.StackTrace);
+
+                if (ex is AbandonedMutexException)
+                {
+                    AppMutex.ReleaseMutex();
+                    crashReport.AddEntry("Released abandoned mutex");
+                }
 
                 //Rethrow exception
                 throw (ex);
             }
         }
     }
+
 }

@@ -20,16 +20,6 @@ namespace Clippy.Resources
             m_data = text;
         }
 
-        public override void CopyToClipboard()
-        {
-            if (Data == null)
-            {
-                return;
-            }
-
-            Clipboard.SetText(GetText());
-        }
-
         public void UpdateText(string newText)
         {
             m_data = newText;

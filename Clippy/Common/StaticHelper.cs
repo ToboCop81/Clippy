@@ -2,6 +2,8 @@
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace Clippy.Common
 {
@@ -10,6 +12,59 @@ namespace Clippy.Common
     /// </summary>
     public static class StaticHelper
     {
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetOpenClipboardWindow();
+
+        [DllImport("user32.dll")]
+        static extern int GetWindowText(int hwnd, StringBuilder text, int count);
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowTextLength(int hwnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+        public static string GetVersionInfoString()
+        {
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+            return $"{currentAssembly.FullName}_V{currentAssembly.GetName().Version.ToString()}";
+        }
+
+        /// <summary>
+        /// Gets the pipe name for sending messages between instances
+        /// </summary>
+        public static string GetPipeName()
+        {
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+            return "##ClippyPipe##";
+        }
+
+        /// <summary>
+        /// When the clipboard is blocked: Get the title of the window which is respoinsible
+        /// </summary>
+        public static string GetOpenClipboardWindowInfo()
+        {
+            var hwnd = GetOpenClipboardWindow();
+            if (hwnd == IntPtr.Zero)
+            {
+                return "<unknown>";
+            }
+
+            int handle = hwnd.ToInt32();
+            int titleLength = GetWindowTextLength(handle);
+            StringBuilder titleBuilder = new StringBuilder(titleLength);
+            GetWindowText(handle, titleBuilder, titleLength);
+
+            uint processId;
+            GetWindowThreadProcessId(hwnd, out processId);
+
+            string title = titleBuilder.ToString();
+            title = title == string.Empty ? "<no title>" : title;
+
+            return $"PID: {processId} Title: {title}";
+        }
+
         /// <summary>
         /// Checks if given expression is a numeric value
         /// </summary>
@@ -58,6 +113,24 @@ namespace Clippy.Common
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Convert given plaintext to base64 encoded string
+        /// </summary>
+        public static string Base64Encode(string plainText)
+        {
+            var bytes = Encoding.UTF8.GetBytes(plainText);
+            return Convert.ToBase64String(bytes);
+        }
+
+        /// <summary>
+        /// Convert base64 encoded string to plain text
+        /// </summary>
+        public static string Base64Decode(string base64string)
+        {
+            var bytes = Convert.FromBase64String(base64string);
+            return Encoding.UTF8.GetString(bytes);
         }
 
         /// <summary>

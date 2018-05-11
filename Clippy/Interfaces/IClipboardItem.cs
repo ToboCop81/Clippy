@@ -30,6 +30,11 @@ namespace Clippy.Interfaces
         bool Favorite { get; set; }
 
         /// <summary>
+        /// A flag that indicates if the current item has any data
+        /// </summary>
+        bool HasData { get;  }
+
+        /// <summary>
         /// The creation time stamp
         /// </summary>
         DateTime TimeStamp { get; }
@@ -43,10 +48,5 @@ namespace Clippy.Interfaces
         /// The data object
         /// </summary>
         object Data { get; }
-
-        /// <summary>
-        /// Copies the content of Data to the clipboard
-        /// </summary>
-        void CopyToClipboard();
     }
 }

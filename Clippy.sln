@@ -8,16 +8,25 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{CD45DAD5-5D64-44CE-9648-FEAE7DD546C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD45DAD5-5D64-44CE-9648-FEAE7DD546C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD45DAD5-5D64-44CE-9648-FEAE7DD546C8}.Debug|x64.ActiveCfg = Debug|x64
+		{CD45DAD5-5D64-44CE-9648-FEAE7DD546C8}.Debug|x64.Build.0 = Debug|x64
 		{CD45DAD5-5D64-44CE-9648-FEAE7DD546C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD45DAD5-5D64-44CE-9648-FEAE7DD546C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD45DAD5-5D64-44CE-9648-FEAE7DD546C8}.Release|x64.ActiveCfg = Release|x64
+		{CD45DAD5-5D64-44CE-9648-FEAE7DD546C8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {29A50802-1DE1-401D-9593-13D3B0B34B38}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 2
