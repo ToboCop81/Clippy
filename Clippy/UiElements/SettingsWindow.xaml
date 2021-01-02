@@ -26,6 +26,7 @@
                     <CheckBox x:Name="CheckBoxAutosaveItems" Content="Autosave items list" />
                     <CheckBox x:Name="CheckBoxAutosaveWindowLayout" Content="Autosave window layout" />
                     <CheckBox x:Name="CheckBoxTextItemNameFromContent" Content="Generate text item names from content" />
+                    <CheckBox x:Name="CheckBoxShowTrayIcon" Content="Show icon in system tray" />
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Clipboard files">

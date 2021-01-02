@@ -1,5 +1,5 @@
 ﻿/// Clippy - File: "MainWindow.xaml.cs"
-/// Copyright © 2018 by Tobias Zorn
+/// Copyright © 2020 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Common;
@@ -55,6 +55,12 @@ namespace Clippy
         private void ApplySettings()
         {
             Topmost = ClippySettings.Instance.MainWindowAlwaysOnTop;
+            AlwaysOnTopMenuItem.IsChecked = Topmost;
+            if (Topmost) Activate();
+
+            bool showIcon = ClippySettings.Instance.ShowIconInSystemTray;
+            TrayIcon.Visibility = (showIcon) ? Visibility.Visible : Visibility.Hidden;
+
             ButtonGetFromFile.Visibility = ClippySettings.Instance.UseClipboardFiles ? Visibility.Visible : Visibility.Collapsed;
             UpdateItemsList();
         }
@@ -79,6 +85,8 @@ namespace Clippy
 
         private void ShutdownProgram()
         {
+            TrayIcon.Visibility = Visibility.Hidden;
+            ClippySettings.Instance.SaveAllSettings();
             Environment.Exit(Environment.ExitCode);
         }
 
@@ -125,7 +133,7 @@ namespace Clippy
         private void MenuItemAbout_Click(object sender, RoutedEventArgs e)
         {
             TermsOfUseWindow termsOfUseWindow = new TermsOfUseWindow();
-            termsOfUseWindow.Show();
+            termsOfUseWindow.ShowDialog();
         }
 
         private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
@@ -185,6 +193,13 @@ namespace Clippy
         private void ButtonGetFromTextFile_Click(object sender, RoutedEventArgs e)
         {
             ClipDataManager.Instance.GetDataFromFile(DataKind.PlainText);
+        }
+
+        private void AlwaysOnTopMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            AlwaysOnTopMenuItem.IsChecked = !AlwaysOnTopMenuItem.IsChecked;
+            ClippySettings.Instance.MainWindowAlwaysOnTop = AlwaysOnTopMenuItem.IsChecked;
+            ApplySettings();
         }
 
         private void ClipboardItemView_ClickHandler(object sender, ItemAction action, ClipboardItemEventArgs e)
@@ -274,6 +289,22 @@ namespace Clippy
             if (ClippySettings.Instance.UseClipboardFiles && e.Key == Key.F4)
             {
                 ClipDataManager.Instance.GetDataFromFile(DataKind.PlainText);
+            }
+        }
+
+        private void ClippyMainWindow_StateChanged(object sender, EventArgs e)
+        {
+            if (ClippySettings.Instance.ShowIconInSystemTray)
+            {
+                switch (WindowState)
+                {
+                    case WindowState.Minimized:
+                        ShowInTaskbar = false;
+                        break;
+                    default:
+                        ShowInTaskbar = true;
+                        break;
+                }
             }
         }
 
@@ -406,6 +437,16 @@ namespace Clippy
                 default:
                     break;
             }
+        }
+
+        private void TrayIcon_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
+
+            Activate();
         }
     }
 }

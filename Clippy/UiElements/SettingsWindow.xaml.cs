@@ -126,6 +126,7 @@ namespace Clippy.UiElements
             CheckBoxAutosaveWindowLayout.IsChecked = ClippySettings.Instance.SaveWindowLayoutState;
             CheckBoxAutosaveItems.IsChecked = ClippySettings.Instance.AutoSaveState;
             CheckBoxTextItemNameFromContent.IsChecked = ClippySettings.Instance.TextItemNameFromContent;
+            CheckBoxShowTrayIcon.IsChecked = ClippySettings.Instance.ShowIconInSystemTray;
 
             // Clipboard file settings
             CheckBoxUseClipboardFiles.IsChecked = ClippySettings.Instance.UseClipboardFiles;
@@ -147,6 +148,8 @@ namespace Clippy.UiElements
             ClippySettings.Instance.SaveWindowLayoutState = CheckBoxAutosaveWindowLayout.IsChecked.Value;
             ClippySettings.Instance.AutoSaveState = CheckBoxAutosaveItems.IsChecked.Value;
             ClippySettings.Instance.TextItemNameFromContent = CheckBoxTextItemNameFromContent.IsChecked.Value;
+            ClippySettings.Instance.ShowIconInSystemTray = CheckBoxShowTrayIcon.IsChecked.Value;
+
 
             // Clipboard file settings
             ClippySettings.Instance.UseClipboardFiles = CheckBoxUseClipboardFiles.IsChecked.Value;

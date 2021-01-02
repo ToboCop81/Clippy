@@ -4,9 +4,9 @@
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:cs="clr-namespace:Clippy.Common"
-        xmlns:uielements="clr-namespace:Clippy.UiElements"
+        xmlns:ui="clr-namespace:Clippy.UiElements"
         mc:Ignorable="d"
-        Title="Clippy" Height="387" Width="250" MinWidth="250" MinHeight="200" KeyUp="Window_KeyUp" Icon="Graphics/ClippyLogo.ico" Closed="Window_Closed" Closing="Window_Closing" KeyDown="ClippyMainWindow_KeyDown">
+        Title="Clippy" Height="387" Width="250" MinWidth="250" MinHeight="200" KeyUp="Window_KeyUp" Icon="Graphics/ClippyLogo.ico" Closed="Window_Closed" Closing="Window_Closing" KeyDown="ClippyMainWindow_KeyDown" StateChanged="ClippyMainWindow_StateChanged">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition x:Name="MenuRow" Height="27"></RowDefinition>
@@ -14,7 +14,7 @@
             <RowDefinition x:Name="FooterRow" Height="23"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Height="27" Orientation="Horizontal" Background="#FFF0F0F0">
-         <Menu x:Name="MainMenu"  VerticalAlignment="Top" Grid.Row="0" HorizontalAlignment="Left">
+            <Menu x:Name="MainMenu"  VerticalAlignment="Top" Grid.Row="0" HorizontalAlignment="Left">
                 <MenuItem Header="_Actions" >
                     <MenuItem Header="_Clear List" HorizontalAlignment="Left" Click="MenuItemClear_Click"/>
                     <MenuItem Header="_Remove selected items" HorizontalAlignment="Left" Click="MenuItemClearSelected_Click"/>
@@ -27,18 +27,18 @@
                     <MenuItem Header="_About" HorizontalAlignment="Left" Click="MenuItemAbout_Click"/>
                     <MenuItem Header="_Exit" HorizontalAlignment="Left" Click="MenuItemExit_Click"/>
                 </MenuItem>
-         </Menu>
-          <Button x:Name="ButtonGetFromClipboard" Width="40" ToolTip="Get content from clipboard (F3)" Click="ButtonGetFromClipboard_Click" Margin="5,0,0,0" Height="23">
-            <Image Source="/Clippy;component/Graphics/Paste.png" Height="16" />
-          </Button>
-          <Button x:Name="ButtonGetFromFile"  Width="40" ToolTip="Get content from file (F4)" Click="ButtonGetFromTextFile_Click" Margin="5,0,0,0" Height="23">
-            <Image Source="/Clippy;component/Graphics/CopyFromFile.png" Height="16" />
-          </Button>
+            </Menu>
+            <Button x:Name="ButtonGetFromClipboard" Width="40" ToolTip="Get content from clipboard (F3)" Click="ButtonGetFromClipboard_Click" Margin="5,0,0,0" Height="23">
+                <Image Source="/Clippy;component/Graphics/Paste.png" Height="16" />
+            </Button>
+            <Button x:Name="ButtonGetFromFile"  Width="40" ToolTip="Get content from file (F4)" Click="ButtonGetFromTextFile_Click" Margin="5,0,0,0" Height="23">
+                <Image Source="/Clippy;component/Graphics/CopyFromFile.png" Height="16" />
+            </Button>
         </StackPanel>
         <ListBox Name="ListBoxClipboardItems" Grid.Row="1" Height="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <uielements:ClipboardItemView CopyClicked="ClipboardItemView_ClickHandler" HorizontalAlignment="Stretch" EditClicked="ClipboardItemView_ClickHandler" DeleteClicked="ClipboardItemView_ClickHandler" />
+                    <ui:ClipboardItemView CopyClicked="ClipboardItemView_ClickHandler" HorizontalAlignment="Stretch" EditClicked="ClipboardItemView_ClickHandler" DeleteClicked="ClipboardItemView_ClickHandler" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -46,5 +46,18 @@
             <Label Content="Items:" HorizontalAlignment="Left" Padding="0,0,5,0" />
             <Label x:Name="ItemCountLabel" Content="0" HorizontalAlignment="Left" Padding="0,0,5,0" />
         </StatusBar>
+        <ui:TrayIcon
+            x:Name="TrayIcon"
+            Text="{Binding ElementName=ClippyMainWindow, Path=Title}"
+            Icon="Graphics/ClippyLogo.ico" MouseDoubleClick="TrayIcon_MouseDoubleClick">
+            <ui:TrayIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Name="AlwaysOnTopMenuItem" Header="Always on top" Click="AlwaysOnTopMenuItem_Click"/>
+                    <MenuItem Header="Settings"  HorizontalAlignment="Left" Click="MenuItemSettings_Click" />
+                    <MenuItem Header="About" HorizontalAlignment="Left" Click="MenuItemAbout_Click"/>
+                    <MenuItem Header="Exit" HorizontalAlignment="Left" Click="MenuItemExit_Click"/>
+                </ContextMenu>
+            </ui:TrayIcon.ContextMenu>
+        </ui:TrayIcon>
     </Grid>
 </Window>
