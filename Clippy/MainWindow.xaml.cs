@@ -1,5 +1,5 @@
 ﻿/// Clippy - File: "MainWindow.xaml.cs"
-/// Copyright © 2020 by Tobias Zorn
+/// Copyright © 2021 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Common;
@@ -308,7 +308,7 @@ namespace Clippy
             }
         }
 
-        private void Window_Closed(object sender, System.EventArgs e)
+        private void Window_Closed(object sender, EventArgs e)
         {
             if (ClippySettings.Instance.AutoSaveState == true)
             {
@@ -316,9 +316,10 @@ namespace Clippy
             }
 
             ClippySettings.Instance.SaveAllSettings();
+            TrayIcon.Dispose();
         }
 
-        private void Window_Closing(object sender, System.EventArgs e)
+        private void Window_Closing(object sender, EventArgs e)
         {
             if (ClippySettings.Instance.SaveWindowLayoutState == true)
             {

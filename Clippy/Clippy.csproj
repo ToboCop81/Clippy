@@ -102,6 +102,7 @@
     <Compile Include="Common\Events.cs" />
     <Compile Include="Functionality\AsyncPipeServer.cs" />
     <Compile Include="Functionality\AsyncPlipeClient.cs" />
+    <Compile Include="Functionality\HotkeyHelper.cs" />
     <Compile Include="Functionality\SettingsManager.cs" />
     <Compile Include="Resources\ClipboardItemBase.cs" />
     <Compile Include="Resources\ImageItem.cs" />

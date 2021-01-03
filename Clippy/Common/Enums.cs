@@ -1,6 +1,8 @@
 ﻿/// Clippy - File: "Enums.cs"
-/// Copyright © 2018 by Tobias Zorn
+/// Copyright © 2021 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using System;
 
 namespace Clippy.Common
 {
@@ -51,5 +53,15 @@ namespace Clippy.Common
         Info = 1,
         Warning = 2,
         Error = 3,
+    }
+
+    [Flags]
+    public enum KeyModifiers
+    {
+        None = 0,
+        Alt = 1,
+        Control = 2,
+        Shift = 4,
+        Windows = 8
     }
 }

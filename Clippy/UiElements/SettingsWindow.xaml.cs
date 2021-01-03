@@ -169,5 +169,32 @@ namespace Clippy.UiElements
 
             ClippySettings.Instance.SaveAllSettings();
         }
+
+        private void TextboxGlobalHotkey_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            TextboxGlobalHotkey.Clear();
+            var modifiers = StaticHelper.GetCurrentKeyModifiers();
+            string pressedKeys = (modifiers != KeyModifiers.None) ? $"{modifiers} + {e.Key}" : $"{e.Key}";
+            TextboxGlobalHotkey.Text = pressedKeys;
+        }
+
+        private void CheckBoxGlobalHotkey_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (CheckBoxGlobalHotkey.IsChecked.Value && string.IsNullOrWhiteSpace(TextboxGlobalHotkey.Text))
+            {
+                TextboxGlobalHotkey.Text = "Press hotkey";
+                TextboxGlobalHotkey.Focus();
+            }
+        }
+
+        private void CheckBoxGlobalHotkey_Checked(object sender, RoutedEventArgs e)
+        {
+            if (CheckBoxGlobalHotkey.IsChecked.Value && string.IsNullOrWhiteSpace(TextboxGlobalHotkey.Text))
+            {
+                TextboxGlobalHotkey.Text = "Press hotkey";
+            }
+
+            TextboxGlobalHotkey.Focus();
+        }
     }
 }

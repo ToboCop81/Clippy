@@ -1,9 +1,14 @@
-﻿using System;
+﻿/// Clippy - File: "StaticHelper.cs"
+/// Copyright © 2021 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Windows.Input;
 
 namespace Clippy.Common
 {
@@ -153,6 +158,19 @@ namespace Clippy.Common
             else if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff) { encoding = Encoding.UTF32; }
                       
             return encoding;
+        }
+
+        /// <summary>
+        /// Get the current pressed key modifiers
+        /// </summary>
+        public static KeyModifiers GetCurrentKeyModifiers()
+        {
+            if ((Keyboard.Modifiers & ModifierKeys.Alt) > 0) return KeyModifiers.Alt;
+            if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) return KeyModifiers.Control;
+            if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0) return KeyModifiers.Shift;
+            if ((Keyboard.Modifiers & ModifierKeys.Windows) > 0) return KeyModifiers.Windows;
+
+            return KeyModifiers.None;
         }
     }
 }

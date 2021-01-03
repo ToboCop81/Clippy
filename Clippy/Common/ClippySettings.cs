@@ -1,5 +1,5 @@
 ﻿/// Clippy - File: "ClippySettings.cs"
-/// Copyright © 2020 by Tobias Zorn
+/// Copyright © 2021 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Functionality;

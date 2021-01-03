@@ -1,5 +1,5 @@
 ﻿/// Clippy - File: "TrayIcon.cs"
-/// Copyright © 2020 by Tobias Zorn
+/// Copyright © 2021 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Common;
@@ -16,7 +16,7 @@ namespace Clippy.UiElements
 {
     [ContentProperty("Text")]
     [DefaultEvent("MouseDoubleClick")]
-    public partial class TrayIcon : FrameworkElement, IAddChild
+    public partial class TrayIcon : FrameworkElement, IAddChild, IDisposable
     {
         public static readonly RoutedEvent MouseClickEvent = EventManager.RegisterRoutedEvent(
             "MouseClick", RoutingStrategy.Bubble, typeof(MouseButtonEventHandler),typeof(TrayIcon));
@@ -240,5 +240,14 @@ namespace Clippy.UiElements
         partial void AttachContextMenu();
 
         partial void InitializeNativeHooks();
+
+        public void Dispose()
+        {
+            _trayIcon.MouseDown -= OnMouseDown;
+            _trayIcon.MouseUp -= OnMouseUp;
+            _trayIcon.MouseClick -= OnMouseClick;
+            _trayIcon.MouseDoubleClick -= OnMouseDoubleClick;
+            _trayIcon.Dispose();
+        }
     }
 }
