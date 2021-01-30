@@ -28,7 +28,7 @@
                     <CheckBox x:Name="CheckBoxTextItemNameFromContent" Content="Generate text item names from content" />
                     <CheckBox x:Name="CheckBoxShowTrayIcon" Content="Show icon in system tray" />
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox x:Name="CheckBoxGlobalHotkey" Content="Use global hotkey to fetch clipboard content:" Checked="CheckBoxGlobalHotkey_Checked"/>
+                        <CheckBox x:Name="CheckBoxGlobalHotkey" Content="Use global hotkey to fetch clipboard content:" Checked="CheckBoxGlobalHotkey_Checked" Unchecked="CheckBoxGlobalHotkey_Unchecked"/>
                         <TextBox x:Name="TextboxGlobalHotkey" Width="90" Margin="10,0,0,0" KeyDown="TextboxGlobalHotkey_KeyDown" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" TextAlignment="Center" IsReadOnly="True"/>
                     </StackPanel>
                 </StackPanel>

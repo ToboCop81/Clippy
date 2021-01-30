@@ -3,12 +3,14 @@
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Common;
-using System.Windows;
-using System.Text;
-using System;
+using Clippy.Resources;
 using Microsoft.Win32;
-using System.Windows.Media;
+using System;
+using System.Text;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Clippy.UiElements
 {
@@ -19,6 +21,8 @@ namespace Clippy.UiElements
     {
         private Brush s_invalidSettingBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x7F, 0x7F));
         private const string s_settingsInvalidMessage = "One or more of the settings are invalid.";
+        private GlobalHotkey _currentHotkey;
+        private bool _isRestoring = false;
 
         public SettingsWindow()
         {
@@ -34,7 +38,7 @@ namespace Clippy.UiElements
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = Title + " - Select clipboard text file...";
-           
+
             //openFileDialog.Filter = $"Clippy list file (*.{ext})|*.{ext}";
 
             if (openFileDialog.ShowDialog() == true && !string.IsNullOrEmpty(openFileDialog.FileName))
@@ -121,12 +125,17 @@ namespace Clippy.UiElements
 
         private void RestoreSettings()
         {
+            _isRestoring = true;
+
             // General settings
             CheckBoxAlwaysOnTop.IsChecked = ClippySettings.Instance.MainWindowAlwaysOnTop;
             CheckBoxAutosaveWindowLayout.IsChecked = ClippySettings.Instance.SaveWindowLayoutState;
             CheckBoxAutosaveItems.IsChecked = ClippySettings.Instance.AutoSaveState;
             CheckBoxTextItemNameFromContent.IsChecked = ClippySettings.Instance.TextItemNameFromContent;
             CheckBoxShowTrayIcon.IsChecked = ClippySettings.Instance.ShowIconInSystemTray;
+            _currentHotkey = ClippySettings.Instance.GlobalHotkey;
+            TextboxGlobalHotkey.Text = _currentHotkey.ToString();
+            CheckBoxGlobalHotkey.IsChecked = _currentHotkey.IsActive;
 
             // Clipboard file settings
             CheckBoxUseClipboardFiles.IsChecked = ClippySettings.Instance.UseClipboardFiles;
@@ -139,6 +148,8 @@ namespace Clippy.UiElements
 
             int codepage = ClippySettings.Instance.ClipboardTextFileEncoding;
             ComboBoxEncoding.SelectedIndex = Array.FindIndex(Encoding.GetEncodings(), enc => enc.CodePage == codepage);
+
+            _isRestoring = false;
         }
 
         private void ApplySettings()
@@ -149,6 +160,7 @@ namespace Clippy.UiElements
             ClippySettings.Instance.AutoSaveState = CheckBoxAutosaveItems.IsChecked.Value;
             ClippySettings.Instance.TextItemNameFromContent = CheckBoxTextItemNameFromContent.IsChecked.Value;
             ClippySettings.Instance.ShowIconInSystemTray = CheckBoxShowTrayIcon.IsChecked.Value;
+            ClippySettings.Instance.GlobalHotkey = _currentHotkey;
 
 
             // Clipboard file settings
@@ -170,31 +182,38 @@ namespace Clippy.UiElements
             ClippySettings.Instance.SaveAllSettings();
         }
 
-        private void TextboxGlobalHotkey_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void TextboxGlobalHotkey_KeyDown(object sender, KeyEventArgs e)
         {
             TextboxGlobalHotkey.Clear();
-            var modifiers = StaticHelper.GetCurrentKeyModifiers();
-            string pressedKeys = (modifiers != KeyModifiers.None) ? $"{modifiers} + {e.Key}" : $"{e.Key}";
-            TextboxGlobalHotkey.Text = pressedKeys;
+            _currentHotkey.Key = e.Key;
+            _currentHotkey.Modifiers = StaticHelper.GetCurrentKeyModifiers();
+            TextboxGlobalHotkey.Text = _currentHotkey.ToString();
         }
 
-        private void CheckBoxGlobalHotkey_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void CheckBoxGlobalHotkey_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (CheckBoxGlobalHotkey.IsChecked.Value && string.IsNullOrWhiteSpace(TextboxGlobalHotkey.Text))
-            {
-                TextboxGlobalHotkey.Text = "Press hotkey";
-                TextboxGlobalHotkey.Focus();
-            }
+            ActivateHotkeyField();
         }
 
         private void CheckBoxGlobalHotkey_Checked(object sender, RoutedEventArgs e)
         {
-            if (CheckBoxGlobalHotkey.IsChecked.Value && string.IsNullOrWhiteSpace(TextboxGlobalHotkey.Text))
+            ActivateHotkeyField();
+        }
+
+        private void CheckBoxGlobalHotkey_Unchecked(object sender, RoutedEventArgs e)
+        {
+            _currentHotkey.IsActive = CheckBoxGlobalHotkey.IsChecked.Value;
+        }
+
+        private void ActivateHotkeyField()
+        {
+            _currentHotkey.IsActive = CheckBoxGlobalHotkey.IsChecked.Value;
+            if (_currentHotkey.IsActive && _currentHotkey.Key == Key.None)
             {
                 TextboxGlobalHotkey.Text = "Press hotkey";
             }
 
-            TextboxGlobalHotkey.Focus();
+            if (!_isRestoring) TextboxGlobalHotkey.Focus(); ;
         }
     }
 }

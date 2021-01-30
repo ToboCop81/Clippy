@@ -3,6 +3,7 @@
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Functionality;
+using Clippy.Resources;
 using System;
 using System.Windows;
 
@@ -22,6 +23,7 @@ namespace Clippy.Common
         private double _FontSize;
         private string _clipboardTextFileName;
         private int _clipboardTextFileEncoding;
+        private GlobalHotkey _globalHotKey;
 
         public static class SettingNames
         {
@@ -41,11 +43,12 @@ namespace Clippy.Common
             public const string EmptyClipboardFileAllowed = "EmptyClipboardFileAllowed";
             public const string MainWindowAlwaysOnTop = "MainWindowAlwaysOnTop";
             public const string ShowIconInSystemTray = "ShowIconInSystemTray";
+            public const string GlobalHotkey = "GlobalHotkey";
 
             /// <summary>
             /// Count of settings. Increase this value if a new setting is added
             /// </summary>
-            public const int Count = 18;
+            public const int Count = 19;
         }
 
         private ClippySettings() { }
@@ -193,6 +196,19 @@ namespace Clippy.Common
             }
         }
 
+        public GlobalHotkey GlobalHotkey
+        {
+            get { return _globalHotKey; }
+            set
+            {
+                _globalHotKey = value;
+                if (_initialized)
+                {
+                    SettingsManager.Instance.UpdateSetting(SettingNames.GlobalHotkey, _globalHotKey);
+                }
+            }
+        }
+
         public void InitializeSettings()
         {
             SettingsManager.Instance.Initialize();
@@ -298,6 +314,7 @@ namespace Clippy.Common
                 _allowEmptyClipboardFiles = (bool)SettingsManager.Instance.GetValue(SettingNames.EmptyClipboardFileAllowed);
                 _mainWindowAlwaysOnTop = (bool)SettingsManager.Instance.GetValue(SettingNames.MainWindowAlwaysOnTop);
                 _showIconInSystemTray = (bool)SettingsManager.Instance.GetValue(SettingNames.ShowIconInSystemTray);
+                _globalHotKey = (GlobalHotkey)SettingsManager.Instance.GetValue(SettingNames.GlobalHotkey);
             }
             catch (NullReferenceException)
             {
@@ -328,6 +345,7 @@ namespace Clippy.Common
             SettingsManager.Instance.AddSetting(SettingNames.PreviewFontSize, (double)12);
             SettingsManager.Instance.AddSetting(SettingNames.ClipboardTextFileName, string.Empty);
             SettingsManager.Instance.AddSetting(SettingNames.ClipboardTextFileEncoding, System.Text.Encoding.UTF8.CodePage);
+            SettingsManager.Instance.AddSetting(SettingNames.GlobalHotkey, new GlobalHotkey());
         }
     }
 }

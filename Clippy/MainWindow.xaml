@@ -16,9 +16,10 @@
         <StackPanel Height="27" Orientation="Horizontal" Background="#FFF0F0F0">
             <Menu x:Name="MainMenu"  VerticalAlignment="Top" Grid.Row="0" HorizontalAlignment="Left">
                 <MenuItem Header="_Actions" >
-                    <MenuItem Header="_Clear List" HorizontalAlignment="Left" Click="MenuItemClear_Click"/>
-                    <MenuItem Header="_Remove selected items" HorizontalAlignment="Left" Click="MenuItemClearSelected_Click"/>
+                    <MenuItem Name="MenuItemClearList" Header="_Clear List" HorizontalAlignment="Left" Click="MenuItemClear_Click"/>
+                    <MenuItem Name="MenuItemClearSelected"  Header="_Remove selected items" HorizontalAlignment="Left" Click="MenuItemClearSelected_Click"/>
                     <Separator/>
+                    <MenuItem Name="MenuItemResetWindow" Header="Reset _window"  HorizontalAlignment="Left" Click="MenuItemResetWindow_click" />
                     <MenuItem Name="MenuItemSettings" Header="Se_ttings"  HorizontalAlignment="Left" Click="MenuItemSettings_Click" />
                     <Separator/>
                     <MenuItem Name="MenuItemSaveAs" Header="_Save list as" Click="MenuItemSaveAs_Click" />
@@ -53,6 +54,7 @@
             <ui:TrayIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="AlwaysOnTopMenuItem" Header="Always on top" Click="AlwaysOnTopMenuItem_Click"/>
+                    <MenuItem Header="Reset window"  HorizontalAlignment="Left" Click="MenuItemResetWindow_click" />
                     <MenuItem Header="Settings"  HorizontalAlignment="Left" Click="MenuItemSettings_Click" />
                     <MenuItem Header="About" HorizontalAlignment="Left" Click="MenuItemAbout_Click"/>
                     <MenuItem Header="Exit" HorizontalAlignment="Left" Click="MenuItemExit_Click"/>

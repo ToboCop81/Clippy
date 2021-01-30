@@ -1,5 +1,5 @@
 ﻿/// Clippy - File: "App.xaml.cs"
-/// Copyright © 2018 by Tobias Zorn
+/// Copyright © 2021 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Common;
@@ -39,7 +39,7 @@ namespace Clippy
                         Environment.Exit(1);
                     }
 
-                    string fileName = String.Join(" ", args).Trim();
+                    string fileName = string.Join(" ", args).Trim();
 
                     // Check if first argument is a valid file name - then send it to the already running instance and exit
                     if (File.Exists(fileName))
@@ -66,11 +66,12 @@ namespace Clippy
                 var Assembly = System.Reflection.Assembly.GetExecutingAssembly();
                 LogfileHandler crashReport = new LogfileHandler();
                 crashReport.AddDateStamp = false;
-                crashReport.Filename = "CLippy-crash-report_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt";
+                crashReport.Filename = "Clippy-crash-report_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt";
                 crashReport.Path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                crashReport.AddEntry("CLippy Crash report");
+                crashReport.AddEntry("Clippy Crash report");
                 crashReport.AddSpace();
-                crashReport.AddEntry("Assembly information: " + Assembly.GetName().Version.ToString());
+                crashReport.AddEntry($"Assembly information: {Assembly.GetName().Version.ToString()}");
+                crashReport.AddEntry($"OS Version: {Environment.OSVersion.VersionString}");
                 crashReport.AddEntry("Unknown exception. Program execution aborted. Exception details:");
                 crashReport.AddSpace();
                 crashReport.AddEntry(Environment.NewLine + ex.Message, false);

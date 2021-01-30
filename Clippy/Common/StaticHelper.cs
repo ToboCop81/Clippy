@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Windows.Input;
+using System.Windows;
 
 namespace Clippy.Common
 {
@@ -163,14 +164,29 @@ namespace Clippy.Common
         /// <summary>
         /// Get the current pressed key modifiers
         /// </summary>
-        public static KeyModifiers GetCurrentKeyModifiers()
+        public static ModifierKeys GetCurrentKeyModifiers()
         {
-            if ((Keyboard.Modifiers & ModifierKeys.Alt) > 0) return KeyModifiers.Alt;
-            if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) return KeyModifiers.Control;
-            if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0) return KeyModifiers.Shift;
-            if ((Keyboard.Modifiers & ModifierKeys.Windows) > 0) return KeyModifiers.Windows;
+            if ((Keyboard.Modifiers & ModifierKeys.Alt) > 0) return ModifierKeys.Alt;
+            if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) return ModifierKeys.Control;
+            if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0) return ModifierKeys.Shift;
+            if ((Keyboard.Modifiers & ModifierKeys.Windows) > 0) return ModifierKeys.Windows;
 
-            return KeyModifiers.None;
+            return ModifierKeys.None;
+        }
+
+
+        /// <summary>
+        /// Centers the given window on the primary screen
+        /// </summary>
+        /// <param name="window"></param>
+        public static void CenterOnScreen(Window window)
+        {
+            double screenWidth = SystemParameters.PrimaryScreenWidth;
+            double screenHeight = SystemParameters.PrimaryScreenHeight;
+            double windowWidth = window.Width;
+            double windowHeight = window.Height;
+            window.Left = (screenWidth / 2) - (windowWidth / 2);
+            window.Top = (screenHeight / 2) - (windowHeight / 2);
         }
     }
 }

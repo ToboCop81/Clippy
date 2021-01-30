@@ -106,6 +106,7 @@
     <Compile Include="Functionality\SettingsManager.cs" />
     <Compile Include="Resources\ClipboardItemBase.cs" />
     <Compile Include="Resources\ImageItem.cs" />
+    <Compile Include="Resources\GlobalHotkey.cs" />
     <Compile Include="Resources\PlainTextItem.cs" />
     <Compile Include="Resources\Setting.cs" />
     <Compile Include="UiElements\ClipboardItemView.xaml.cs">

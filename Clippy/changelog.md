@@ -29,3 +29,8 @@
 ## Version 1.5.0.0
 
 * Added system tray icon (can be enabled in the settings)
+
+## Version 1.6.0.0
+
+* Added option to restet window to default state (e.g. if it is outside the visible screen)
+* Added global hotkey to get content from clipboard (can be enabled in the settings)

@@ -54,14 +54,4 @@ namespace Clippy.Common
         Warning = 2,
         Error = 3,
     }
-
-    [Flags]
-    public enum KeyModifiers
-    {
-        None = 0,
-        Alt = 1,
-        Control = 2,
-        Shift = 4,
-        Windows = 8
-    }
 }
