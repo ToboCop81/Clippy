@@ -19,6 +19,6 @@ Clippy is a tool which is designed to get content from the clipoard and holding 
 * This program is licensed under [GNU GENERAL PUBLIC LICENSE](http://www.gnu.org/licenses)
 
 ## Current Version
-Clippy V1.4.0.0 - See changelog.md for more details
+Clippy V1.6.0.0 - See changelog.md for more details
 
 Download latest version [in the releases section](https://github.com/scullhead/Clippy/releases)
