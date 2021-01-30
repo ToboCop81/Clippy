@@ -227,7 +227,7 @@ namespace Clippy.Functionality
         /// TRUE when data was added
         /// FALSE when file was empty or type is not supported
         /// </returns>
-        public bool GetDataFromFile(DataKind type)
+        public bool GetDataFromFile(DataKind type, string fileName = "")
         {
             if (type != DataKind.PlainText)
             {
@@ -235,7 +235,8 @@ namespace Clippy.Functionality
                 return false;
             }
 
-            string content = GetPlainTextFromFile();
+            string loadFrom = !string.IsNullOrEmpty(fileName) ? fileName : ClippySettings.Instance.ClipboardTextFileName;
+            string content = GetPlainTextFromFile(loadFrom);
             if (string.IsNullOrEmpty(content))
             {
                 if (!ClippySettings.Instance.AllowEmptyClipboardFiles)
@@ -491,9 +492,8 @@ namespace Clippy.Functionality
             return true;
         }
 
-        private string GetPlainTextFromFile()
+        private string GetPlainTextFromFile(string fileName)
         {
-            string fileName = ClippySettings.Instance.ClipboardTextFileName;
             if (!File.Exists(fileName))
             {
                 m_status = $"Unable to get the text from the file. The file was not found.";

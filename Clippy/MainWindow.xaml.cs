@@ -1,5 +1,5 @@
 ﻿/// Clippy - File: "MainWindow.xaml.cs"
-/// Copyright © 2018 by Tobias Zorn
+/// Copyright © 2021 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Common;
@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace Clippy
 {
@@ -18,28 +19,38 @@ namespace Clippy
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool m_hasStartupArgs;
-        private string[] m_startupArgs;
-        private AsyncPipeServer m_pipeServer;
+        private bool _hasStartupArgs;
+        private bool _settingsVisible;
+        private bool _isInitializing;
+        private string[] _startupArgs;
+        private SettingsWindow _settingsWindow;
 
+        private AsyncPipeServer _pipeServer;
+        
         public delegate void ServerMessageInvoker(string content);
 
         public MainWindow(bool hasStartupArgs = false, string[] startupArgs = null)
         {
-            m_hasStartupArgs = hasStartupArgs;
-            m_startupArgs = startupArgs;
-            m_pipeServer = new AsyncPipeServer();
-            m_pipeServer.MessageRecieved += new ServerMessage(MessageRecievedHandler);
+            _isInitializing = true;
+            _hasStartupArgs = hasStartupArgs;
+            _startupArgs = startupArgs;
+            _pipeServer = new AsyncPipeServer();
+            _pipeServer.MessageRecieved += new ServerMessage(MessageRecievedHandler);          
             InitializeComponent();
             ClippySettings.Instance.InitializeSettings();
             ClipDataManager.Instance.ItemsChanged += ItemsChangedHandler;
 
             SetupWindow();
+            Action hotkeyPressed = GlobalHotkeyPressed;
+            var interopHelper = new WindowInteropHelper(this);
+            interopHelper.EnsureHandle();
+            HotKeyHelper.Instance.Initialize(interopHelper.Handle, hotkeyPressed);
 
             LoadItemsList();
             ApplySettings();
             string pipeName = StaticHelper.GetPipeName();
-            m_pipeServer.Listen(pipeName);
+            _pipeServer.Listen(pipeName);
+            _isInitializing = false;
         }
 
         private void SetupWindow()
@@ -55,15 +66,41 @@ namespace Clippy
         private void ApplySettings()
         {
             Topmost = ClippySettings.Instance.MainWindowAlwaysOnTop;
+            AlwaysOnTopMenuItem.IsChecked = Topmost;
+            if (Topmost && !_isInitializing) Activate();
+
+            bool showIcon = ClippySettings.Instance.ShowIconInSystemTray;
+            TrayIcon.Visibility = (showIcon) ? Visibility.Visible : Visibility.Hidden;
+
             ButtonGetFromFile.Visibility = ClippySettings.Instance.UseClipboardFiles ? Visibility.Visible : Visibility.Collapsed;
             UpdateItemsList();
+
+            try
+            {
+                var globalHotkey = ClippySettings.Instance.GlobalHotkey;
+                if (globalHotkey.IsActive && globalHotkey.Key != Key.None && HotKeyHelper.Instance.IsInitialized)
+                {
+                    HotKeyHelper.Instance.StopListening();
+                    HotKeyHelper.Instance.ListenForHotKey(globalHotkey);
+                }
+                else if (!globalHotkey.IsActive && HotKeyHelper.Instance.IsListening)
+                {
+                    HotKeyHelper.Instance.StopListening();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, $"{Title}: Global hotkey",MessageBoxButton.OK, MessageBoxImage.Error);
+                ClippySettings.Instance.GlobalHotkey.IsActive = false;
+            }
+
         }
 
         private void LoadItemsList()
         {
-            if (m_hasStartupArgs)
+            if (_hasStartupArgs)
             {
-                string startupFilename = String.Join(" ", m_startupArgs).Trim();
+                string startupFilename = String.Join(" ", _startupArgs).Trim();
                 bool extOk = startupFilename.ToLower().EndsWith("." + ClipDataManager.Instance.FileExtension);
                 if (extOk)
                 {
@@ -79,6 +116,8 @@ namespace Clippy
 
         private void ShutdownProgram()
         {
+            TrayIcon.Visibility = Visibility.Hidden;
+            ClippySettings.Instance.SaveAllSettings();
             Environment.Exit(Environment.ExitCode);
         }
 
@@ -125,17 +164,27 @@ namespace Clippy
         private void MenuItemAbout_Click(object sender, RoutedEventArgs e)
         {
             TermsOfUseWindow termsOfUseWindow = new TermsOfUseWindow();
-            termsOfUseWindow.Show();
+            termsOfUseWindow.ShowDialog();
         }
 
         private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settingsWindow = new SettingsWindow();
-            bool? dialogResult = settingsWindow.ShowDialog();
+            if (_settingsVisible)
+            {
+                _settingsWindow.Activate();
+                return;
+            }
+
+            _settingsVisible = true;
+            _settingsWindow = new SettingsWindow();
+            bool? dialogResult = _settingsWindow.ShowDialog();
             if (dialogResult.HasValue && dialogResult.Value == true)
             {
                 ApplySettings();
             }
+
+            _settingsWindow = null;
+            _settingsVisible = false;
         }
 
         private void MenuItemClear_Click(object sender, RoutedEventArgs e)
@@ -185,6 +234,13 @@ namespace Clippy
         private void ButtonGetFromTextFile_Click(object sender, RoutedEventArgs e)
         {
             ClipDataManager.Instance.GetDataFromFile(DataKind.PlainText);
+        }
+
+        private void AlwaysOnTopMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            AlwaysOnTopMenuItem.IsChecked = !AlwaysOnTopMenuItem.IsChecked;
+            ClippySettings.Instance.MainWindowAlwaysOnTop = AlwaysOnTopMenuItem.IsChecked;
+            ApplySettings();
         }
 
         private void ClipboardItemView_ClickHandler(object sender, ItemAction action, ClipboardItemEventArgs e)
@@ -277,7 +333,34 @@ namespace Clippy
             }
         }
 
-        private void Window_Closed(object sender, System.EventArgs e)
+        private void GlobalHotkeyPressed()
+        {
+            ClipDataManager.Instance.GetDataFromClipboard();
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
+
+            Activate();
+        }
+
+        private void ClippyMainWindow_StateChanged(object sender, EventArgs e)
+        {
+            if (ClippySettings.Instance.ShowIconInSystemTray)
+            {
+                switch (WindowState)
+                {
+                    case WindowState.Minimized:
+                        ShowInTaskbar = false;
+                        break;
+                    default:
+                        ShowInTaskbar = true;
+                        break;
+                }
+            }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
         {
             if (ClippySettings.Instance.AutoSaveState == true)
             {
@@ -285,18 +368,20 @@ namespace Clippy
             }
 
             ClippySettings.Instance.SaveAllSettings();
+            TrayIcon.Dispose();
+            HotKeyHelper.Instance.Dispose();
         }
 
-        private void Window_Closing(object sender, System.EventArgs e)
+        private void Window_Closing(object sender, EventArgs e)
         {
             if (ClippySettings.Instance.SaveWindowLayoutState == true)
             {
                 ClippySettings.Instance.SaveWindowLayout(this);
             }
 
-            m_pipeServer.MessageRecieved -= new ServerMessage(MessageRecievedHandler);
-            m_pipeServer.Shutdown();
-            m_pipeServer = null;
+            _pipeServer.MessageRecieved -= new ServerMessage(MessageRecievedHandler);
+            _pipeServer.Shutdown();
+            _pipeServer = null;
         }
 
         private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e)
@@ -311,11 +396,11 @@ namespace Clippy
 
                 return;
             }
-
+            string title = $"{Title} - Save clipboard list...";
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             string ext = ClipDataManager.Instance.FileExtension;
-            saveFileDialog.Filter = $"Clippy list file (*.{ext})|*.{ext}";
-            saveFileDialog.Title = Title + " - Save clipboard list...";
+            saveFileDialog.Filter = $"Clippy list file (*.{ext})|*.{ext})";
+            saveFileDialog.Title = title;
 
             if (saveFileDialog.ShowDialog() == true && !string.IsNullOrEmpty(saveFileDialog.FileName))
             {
@@ -324,7 +409,7 @@ namespace Clippy
                 {
                     MessageBox.Show(
                         "Saving failed: " + Environment.NewLine + ClipDataManager.Instance.Status,
-                        Title + " - Save clipboard list ...",
+                        title,
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                 }
@@ -333,10 +418,11 @@ namespace Clippy
 
         private void MenuItemOpenList_Click(object sender, RoutedEventArgs e)
         {
+            string title = $"{Title} - Open clipboard list...";
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Title = Title + " - Open clipboard list...";
+            openFileDialog.Title = title;
             string ext = ClipDataManager.Instance.FileExtension;
-            openFileDialog.Filter = $"Clippy list file (*.{ext})|*.{ext}";
+            openFileDialog.Filter = $"Clippy list file (*.{ext})|*.{ext})";
 
             if (openFileDialog.ShowDialog() == true && !string.IsNullOrEmpty(openFileDialog.FileName))
             {
@@ -345,11 +431,29 @@ namespace Clippy
                 {
                     MessageBox.Show(
                         "Open list file failed: " + Environment.NewLine + ClipDataManager.Instance.Status,
-                        Title + " - Open clipboard list...",
+                        title,
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                 }
             }
+        }
+
+        private void TrayIcon_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
+
+            Activate();
+        }
+
+        /// <summary>
+        /// Resets the main window to its default state
+        /// </summary>
+        private void MenuItemResetWindow_click(object sender, RoutedEventArgs e)
+        {
+            ResetWindow();
         }
 
         private void UpdateItemsList()
@@ -384,7 +488,8 @@ namespace Clippy
                         if (!ClipDataManager.Instance.WriteDataToFile(selectedItem.Index))
                         {
                             MessageBox.Show(
-                                "Saving failed: " + Environment.NewLine + ClipDataManager.Instance.Status, Title + " - Save content to file...",
+                                $"Saving failed: {Environment.NewLine}{ClipDataManager.Instance.Status}",
+                                $"{Title} - Save content to file...",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
                         }
@@ -406,6 +511,15 @@ namespace Clippy
                 default:
                     break;
             }
+        }
+
+        private void ResetWindow()
+        {
+            WindowState = WindowState.Normal;
+            Width = 250;
+            Height = 387;
+            StaticHelper.CenterOnScreen(this);
+            Activate();
         }
     }
 }

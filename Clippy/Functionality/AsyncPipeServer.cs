@@ -2,7 +2,6 @@
 /// Copyright © 2018 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
-using Clippy.Common;
 using System;
 using System.Diagnostics;
 using System.IO.Pipes;

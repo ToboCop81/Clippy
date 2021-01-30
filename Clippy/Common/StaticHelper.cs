@@ -1,9 +1,15 @@
-﻿using System;
+﻿/// Clippy - File: "StaticHelper.cs"
+/// Copyright © 2021 by Tobias Zorn
+/// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Windows.Input;
+using System.Windows;
 
 namespace Clippy.Common
 {
@@ -153,6 +159,34 @@ namespace Clippy.Common
             else if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff) { encoding = Encoding.UTF32; }
                       
             return encoding;
+        }
+
+        /// <summary>
+        /// Get the current pressed key modifiers
+        /// </summary>
+        public static ModifierKeys GetCurrentKeyModifiers()
+        {
+            if ((Keyboard.Modifiers & ModifierKeys.Alt) > 0) return ModifierKeys.Alt;
+            if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) return ModifierKeys.Control;
+            if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0) return ModifierKeys.Shift;
+            if ((Keyboard.Modifiers & ModifierKeys.Windows) > 0) return ModifierKeys.Windows;
+
+            return ModifierKeys.None;
+        }
+
+
+        /// <summary>
+        /// Centers the given window on the primary screen
+        /// </summary>
+        /// <param name="window"></param>
+        public static void CenterOnScreen(Window window)
+        {
+            double screenWidth = SystemParameters.PrimaryScreenWidth;
+            double screenHeight = SystemParameters.PrimaryScreenHeight;
+            double windowWidth = window.Width;
+            double windowHeight = window.Height;
+            window.Left = (screenWidth / 2) - (windowWidth / 2);
+            window.Top = (screenHeight / 2) - (windowHeight / 2);
         }
     }
 }

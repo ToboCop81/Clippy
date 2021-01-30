@@ -1,8 +1,9 @@
 ﻿/// Clippy - File: "ClippySettings.cs"
-/// Copyright © 2018 by Tobias Zorn
+/// Copyright © 2021 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
 
 using Clippy.Functionality;
+using Clippy.Resources;
 using System;
 using System.Windows;
 
@@ -11,16 +12,18 @@ namespace Clippy.Common
     public sealed class ClippySettings
     {
         private static ClippySettings s_instance;
-        private bool m_initialized = false;
-        private bool m_autoSave;
-        private bool m_textNameFromContent;
-        private bool m_saveWindowLayout;
-        private bool m_useClipboardFiles;
-        private bool m_allowEmptyClipboardFiles;
-        private bool m_mainWindowAlwaysOnTop;
-        private double m_FontSize;
-        private string m_clipboardTextFileName;
-        private int m_clipboardTextFileEncoding;
+        private bool _initialized = false;
+        private bool _autoSave;
+        private bool _textNameFromContent;
+        private bool _saveWindowLayout;
+        private bool _useClipboardFiles;
+        private bool _allowEmptyClipboardFiles;
+        private bool _mainWindowAlwaysOnTop;
+        private bool _showIconInSystemTray;
+        private double _FontSize;
+        private string _clipboardTextFileName;
+        private int _clipboardTextFileEncoding;
+        private GlobalHotkey _globalHotKey;
 
         public static class SettingNames
         {
@@ -39,11 +42,13 @@ namespace Clippy.Common
             public const string ClipboardTextFileEncoding = "ClipboardTextFileEncoding";
             public const string EmptyClipboardFileAllowed = "EmptyClipboardFileAllowed";
             public const string MainWindowAlwaysOnTop = "MainWindowAlwaysOnTop";
+            public const string ShowIconInSystemTray = "ShowIconInSystemTray";
+            public const string GlobalHotkey = "GlobalHotkey";
 
             /// <summary>
             /// Count of settings. Increase this value if a new setting is added
             /// </summary>
-            public const int Count = 17;
+            public const int Count = 19;
         }
 
         private ClippySettings() { }
@@ -63,117 +68,143 @@ namespace Clippy.Common
 
         public bool AutoSaveState
         {
-            get { return m_autoSave; }
+            get { return _autoSave; }
             set
             {
-                m_autoSave = value;
-                if (m_initialized)
+                _autoSave = value;
+                if (_initialized)
                 {
-                    SettingsManager.Instance.UpdateSetting(SettingNames.AutoSave, m_autoSave);
+                    SettingsManager.Instance.UpdateSetting(SettingNames.AutoSave, _autoSave);
                 }
             }
         }
 
         public bool SaveWindowLayoutState
         {
-            get { return m_saveWindowLayout; }
+            get { return _saveWindowLayout; }
             set
             {
-                m_saveWindowLayout = value;
-                if (m_initialized)
+                _saveWindowLayout = value;
+                if (_initialized)
                 {
-                    SettingsManager.Instance.UpdateSetting(SettingNames.SaveWindow, m_saveWindowLayout);
+                    SettingsManager.Instance.UpdateSetting(SettingNames.SaveWindow, _saveWindowLayout);
                 }
             }
         }
 
         public bool TextItemNameFromContent
         {
-            get { return m_textNameFromContent; }
+            get { return _textNameFromContent; }
             set
             {
-                m_textNameFromContent = value;
-                if (m_initialized)
+                _textNameFromContent = value;
+                if (_initialized)
                 {
-                    SettingsManager.Instance.UpdateSetting(SettingNames.TextNameFromContent, m_textNameFromContent);
+                    SettingsManager.Instance.UpdateSetting(SettingNames.TextNameFromContent, _textNameFromContent);
                 }
             }
         }
 
         public bool UseClipboardFiles
         {
-            get { return m_useClipboardFiles; }
+            get { return _useClipboardFiles; }
             set
             {
-                m_useClipboardFiles = value;
-                if (m_initialized)
+                _useClipboardFiles = value;
+                if (_initialized)
                 {
-                    SettingsManager.Instance.UpdateSetting(SettingNames.UseClipboardFiles, m_useClipboardFiles);
+                    SettingsManager.Instance.UpdateSetting(SettingNames.UseClipboardFiles, _useClipboardFiles);
                 }
             }
         }
 
         public bool AllowEmptyClipboardFiles
         {
-            get { return m_allowEmptyClipboardFiles; }
+            get { return _allowEmptyClipboardFiles; }
             set
             {
-                m_allowEmptyClipboardFiles = value;
-                if (m_initialized)
+                _allowEmptyClipboardFiles = value;
+                if (_initialized)
                 {
-                    SettingsManager.Instance.UpdateSetting(SettingNames.EmptyClipboardFileAllowed, m_allowEmptyClipboardFiles);
+                    SettingsManager.Instance.UpdateSetting(SettingNames.EmptyClipboardFileAllowed, _allowEmptyClipboardFiles);
                 }
             }
         }
 
         public bool MainWindowAlwaysOnTop
         {
-            get { return m_mainWindowAlwaysOnTop; }
+            get { return _mainWindowAlwaysOnTop; }
             set
             {
-                m_mainWindowAlwaysOnTop = value;
-                if (m_initialized)
+                _mainWindowAlwaysOnTop = value;
+                if (_initialized)
                 {
-                    SettingsManager.Instance.UpdateSetting(SettingNames.MainWindowAlwaysOnTop, m_mainWindowAlwaysOnTop);
+                    SettingsManager.Instance.UpdateSetting(SettingNames.MainWindowAlwaysOnTop, _mainWindowAlwaysOnTop);
+                }
+            }
+        }
+
+        public bool ShowIconInSystemTray
+        {
+            get { return _showIconInSystemTray; }
+            set
+            {
+                _showIconInSystemTray = value;
+                if (_initialized)
+                {
+                    SettingsManager.Instance.UpdateSetting(SettingNames.ShowIconInSystemTray, _showIconInSystemTray);
                 }
             }
         }
 
         public string ClipboardTextFileName
         {
-            get { return m_clipboardTextFileName; }
+            get { return _clipboardTextFileName; }
             set
             {
-                m_clipboardTextFileName = value;
-                if (m_initialized)
+                _clipboardTextFileName = value;
+                if (_initialized)
                 {
-                    SettingsManager.Instance.UpdateSetting(SettingNames.ClipboardTextFileName, m_clipboardTextFileName);
+                    SettingsManager.Instance.UpdateSetting(SettingNames.ClipboardTextFileName, _clipboardTextFileName);
                 }
             }
         }
 
         public int ClipboardTextFileEncoding
         {
-            get { return m_clipboardTextFileEncoding; }
+            get { return _clipboardTextFileEncoding; }
             set
             {
-                m_clipboardTextFileEncoding = value;
-                if (m_initialized)
+                _clipboardTextFileEncoding = value;
+                if (_initialized)
                 {
-                    SettingsManager.Instance.UpdateSetting(SettingNames.ClipboardTextFileEncoding, m_clipboardTextFileEncoding);
+                    SettingsManager.Instance.UpdateSetting(SettingNames.ClipboardTextFileEncoding, _clipboardTextFileEncoding);
                 }
             }
         }
 
         public double FontSize
         {
-            get { return m_FontSize; }
+            get { return _FontSize; }
             set
             {
-                m_FontSize = value;
-                if (m_initialized)
+                _FontSize = value;
+                if (_initialized)
                 {
-                    SettingsManager.Instance.UpdateSetting(SettingNames.PreviewFontSize, m_FontSize);
+                    SettingsManager.Instance.UpdateSetting(SettingNames.PreviewFontSize, _FontSize);
+                }
+            }
+        }
+
+        public GlobalHotkey GlobalHotkey
+        {
+            get { return _globalHotKey; }
+            set
+            {
+                _globalHotKey = value;
+                if (_initialized)
+                {
+                    SettingsManager.Instance.UpdateSetting(SettingNames.GlobalHotkey, _globalHotKey);
                 }
             }
         }
@@ -188,7 +219,7 @@ namespace Clippy.Common
                 AddDefaultSettings();
             }
 
-            m_initialized = true;
+            _initialized = true;
 
             LoadDefaultSettings();
 
@@ -201,7 +232,7 @@ namespace Clippy.Common
 
         public void SaveWindowLayout(Window window)
         {
-            if (!m_initialized || window == null) { return; }
+            if (!_initialized || window == null) { return; }
 
             double left = window.Left;
             double top = window.Top;
@@ -224,7 +255,7 @@ namespace Clippy.Common
 
         public void RestoreWindowLayout(Window window)
         {
-            if (!m_initialized || window == null) { return; }
+            if (!_initialized || window == null) { return; }
 
             double top = (double)SettingsManager.Instance.GetValue(window.Name + SettingNames.WindowTop);
             double left = (double)SettingsManager.Instance.GetValue(window.Name + SettingNames.WindowLeft);
@@ -273,16 +304,17 @@ namespace Clippy.Common
         {
             try
             {
-                m_autoSave = (bool)SettingsManager.Instance.GetValue(SettingNames.AutoSave);
-                m_saveWindowLayout = (bool)SettingsManager.Instance.GetValue(SettingNames.SaveWindow);
-                m_textNameFromContent = (bool)SettingsManager.Instance.GetValue(SettingNames.TextNameFromContent);
-                m_FontSize = (double)SettingsManager.Instance.GetValue(SettingNames.PreviewFontSize);
-                m_useClipboardFiles = (bool)SettingsManager.Instance.GetValue(SettingNames.UseClipboardFiles);
-                m_clipboardTextFileName = (string)SettingsManager.Instance.GetValue(SettingNames.ClipboardTextFileName);
-                m_clipboardTextFileEncoding = (int)SettingsManager.Instance.GetValue(SettingNames.ClipboardTextFileEncoding);
-                m_allowEmptyClipboardFiles = (bool)SettingsManager.Instance.GetValue(SettingNames.EmptyClipboardFileAllowed);
-                m_mainWindowAlwaysOnTop = (bool)SettingsManager.Instance.GetValue(SettingNames.MainWindowAlwaysOnTop);
-
+                _autoSave = (bool)SettingsManager.Instance.GetValue(SettingNames.AutoSave);
+                _saveWindowLayout = (bool)SettingsManager.Instance.GetValue(SettingNames.SaveWindow);
+                _textNameFromContent = (bool)SettingsManager.Instance.GetValue(SettingNames.TextNameFromContent);
+                _FontSize = (double)SettingsManager.Instance.GetValue(SettingNames.PreviewFontSize);
+                _useClipboardFiles = (bool)SettingsManager.Instance.GetValue(SettingNames.UseClipboardFiles);
+                _clipboardTextFileName = (string)SettingsManager.Instance.GetValue(SettingNames.ClipboardTextFileName);
+                _clipboardTextFileEncoding = (int)SettingsManager.Instance.GetValue(SettingNames.ClipboardTextFileEncoding);
+                _allowEmptyClipboardFiles = (bool)SettingsManager.Instance.GetValue(SettingNames.EmptyClipboardFileAllowed);
+                _mainWindowAlwaysOnTop = (bool)SettingsManager.Instance.GetValue(SettingNames.MainWindowAlwaysOnTop);
+                _showIconInSystemTray = (bool)SettingsManager.Instance.GetValue(SettingNames.ShowIconInSystemTray);
+                _globalHotKey = (GlobalHotkey)SettingsManager.Instance.GetValue(SettingNames.GlobalHotkey);
             }
             catch (NullReferenceException)
             {
@@ -301,6 +333,7 @@ namespace Clippy.Common
             SettingsManager.Instance.AddSetting(SettingNames.UseClipboardFiles, false);
             SettingsManager.Instance.AddSetting(SettingNames.EmptyClipboardFileAllowed, false);
             SettingsManager.Instance.AddSetting(SettingNames.MainWindowAlwaysOnTop, false);
+            SettingsManager.Instance.AddSetting(SettingNames.ShowIconInSystemTray, false);
             SettingsManager.Instance.AddSetting(SettingNames.MainWindowName + SettingNames.WindowLeft, (double)-1);
             SettingsManager.Instance.AddSetting(SettingNames.MainWindowName + SettingNames.WindowTop, (double)-1);
             SettingsManager.Instance.AddSetting(SettingNames.MainWindowName + SettingNames.WindowWidth, (double)230);
@@ -312,6 +345,7 @@ namespace Clippy.Common
             SettingsManager.Instance.AddSetting(SettingNames.PreviewFontSize, (double)12);
             SettingsManager.Instance.AddSetting(SettingNames.ClipboardTextFileName, string.Empty);
             SettingsManager.Instance.AddSetting(SettingNames.ClipboardTextFileEncoding, System.Text.Encoding.UTF8.CodePage);
+            SettingsManager.Instance.AddSetting(SettingNames.GlobalHotkey, new GlobalHotkey());
         }
     }
 }

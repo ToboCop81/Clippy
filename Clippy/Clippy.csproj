@@ -75,6 +75,8 @@
     <Reference Include="PresentationFramework.Royale" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -100,9 +102,11 @@
     <Compile Include="Common\Events.cs" />
     <Compile Include="Functionality\AsyncPipeServer.cs" />
     <Compile Include="Functionality\AsyncPlipeClient.cs" />
+    <Compile Include="Functionality\HotkeyHelper.cs" />
     <Compile Include="Functionality\SettingsManager.cs" />
     <Compile Include="Resources\ClipboardItemBase.cs" />
     <Compile Include="Resources\ImageItem.cs" />
+    <Compile Include="Resources\GlobalHotkey.cs" />
     <Compile Include="Resources\PlainTextItem.cs" />
     <Compile Include="Resources\Setting.cs" />
     <Compile Include="UiElements\ClipboardItemView.xaml.cs">
@@ -123,6 +127,8 @@
     <Compile Include="UiElements\TextEditorPage.xaml.cs">
       <DependentUpon>TextEditorPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UiElements\TrayIcon.cs" />
+    <Compile Include="UiElements\TrayIcon_Api.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

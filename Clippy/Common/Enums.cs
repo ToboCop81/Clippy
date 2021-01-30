@@ -1,6 +1,8 @@
 ﻿/// Clippy - File: "Enums.cs"
-/// Copyright © 2018 by Tobias Zorn
+/// Copyright © 2021 by Tobias Zorn
 /// Licensed under GNU GENERAL PUBLIC LICENSE
+
+using System;
 
 namespace Clippy.Common
 {
@@ -43,5 +45,13 @@ namespace Clippy.Common
         /// Overwrite file if existing
         /// </summary>
         overwrite,
+    }
+
+    public enum BalloonTipIcon
+    {
+        None = 0,
+        Info = 1,
+        Warning = 2,
+        Error = 3,
     }
 }
