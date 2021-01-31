@@ -20,10 +20,10 @@ namespace Clippy
     public partial class MainWindow : Window
     {
         private bool _hasStartupArgs;
-        private bool _settingsVisible;
         private bool _isInitializing;
         private string[] _startupArgs;
         private SettingsWindow _settingsWindow;
+        private TermsOfUseWindow _termsOfUseWindow;
 
         private AsyncPipeServer _pipeServer;
         
@@ -163,20 +163,32 @@ namespace Clippy
 
         private void MenuItemAbout_Click(object sender, RoutedEventArgs e)
         {
-            TermsOfUseWindow termsOfUseWindow = new TermsOfUseWindow();
-            termsOfUseWindow.ShowDialog();
+            if (_settingsWindow != null) return;
+
+            if (_termsOfUseWindow != null)
+            {
+                _termsOfUseWindow.Activate();
+                return;
+            }
+
+            _termsOfUseWindow = new TermsOfUseWindow();
+            StaticHelper.CenterOnScreen(_termsOfUseWindow);
+            _termsOfUseWindow.ShowDialog();
+            _termsOfUseWindow = null;
         }
 
         private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (_settingsVisible)
+            if (_termsOfUseWindow != null) return;
+
+            if (_settingsWindow != null)
             {
                 _settingsWindow.Activate();
                 return;
             }
 
-            _settingsVisible = true;
             _settingsWindow = new SettingsWindow();
+            StaticHelper.CenterOnScreen(_settingsWindow);
             bool? dialogResult = _settingsWindow.ShowDialog();
             if (dialogResult.HasValue && dialogResult.Value == true)
             {
@@ -184,7 +196,6 @@ namespace Clippy
             }
 
             _settingsWindow = null;
-            _settingsVisible = false;
         }
 
         private void MenuItemClear_Click(object sender, RoutedEventArgs e)
