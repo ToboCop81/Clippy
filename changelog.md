@@ -34,3 +34,7 @@
 
 * Added option to restet window to default state (e.g. if it is outside the visible screen)
 * Added global hotkey to get content from clipboard (can be enabled in the settings)
+
+## Version 1.6.0.1
+
+* Optimized the behavior of settings and terms of use window
