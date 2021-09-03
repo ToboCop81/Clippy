@@ -33,25 +33,30 @@ namespace Clippy
 
                 if (!AppMutex.WaitOne(0, false))
                 {
+                    Functionality.AsyncPlipeClient clippyPipeclient = new Functionality.AsyncPlipeClient();
+                    string pipeName = StaticHelper.GetPipeName();
+
                     if (!hasArgs)
                     {
-                        MessageBox.Show("An instance of Clippy is already running", "Clippy", MessageBoxButton.OK, MessageBoxImage.Information);
-                        Environment.Exit(1);
+                        clippyPipeclient.SendMessage(StaticHelper.Base64Encode(":BRINGTOFRONT:"), pipeName);
+                        Debug.WriteLine("[Client] Sent ':BRINGTOFRONT:' to running instance");
+
                     }
-
-                    string fileName = string.Join(" ", args).Trim();
-
-                    // Check if first argument is a valid file name - then send it to the already running instance and exit
-                    if (File.Exists(fileName))
+                    else
                     {
-                        fileName = StaticHelper.Base64Encode(fileName);
-                        Functionality.AsyncPlipeClient clippyPipeclient = new Functionality.AsyncPlipeClient();
-                        string pipeName = StaticHelper.GetPipeName();
-                        clippyPipeclient.SendMessage(fileName, pipeName);
-                        Debug.WriteLine("[Client] Sent filename to running instance.");
-                        clippyPipeclient = null;
-                        Environment.Exit(Environment.ExitCode);
+                        string fileName = string.Join(" ", args).Trim();
+                        // Check if first argument is a valid file name - then send it to the already running instance and exit
+                        if (File.Exists(fileName))
+                        {
+                            fileName = StaticHelper.Base64Encode(fileName);
+                            clippyPipeclient.SendMessage(fileName, pipeName);
+                            Debug.WriteLine("[Client] Sent filename to running instance.");
+
+                        }
                     }
+
+                    clippyPipeclient = null;
+                    Environment.Exit(Environment.ExitCode);
                 }
 
                 MainWindow mainWindow = new MainWindow(hasArgs, args);

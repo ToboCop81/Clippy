@@ -38,3 +38,7 @@
 ## Version 1.6.1.0
 
 * Optimized the behavior of settings and terms of use window
+
+## Version 1.6.2.0
+
+* The running instance is brought to the front when you try to start a second instance.

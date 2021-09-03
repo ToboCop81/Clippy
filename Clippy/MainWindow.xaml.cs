@@ -133,8 +133,13 @@ namespace Clippy
             if (string.IsNullOrEmpty(content)) return;
 
             content = StaticHelper.Base64Decode(content);
-            bool extOk = content.ToLower().EndsWith("." + ClipDataManager.Instance.FileExtension);
-            if (!extOk)
+            if (content.ToUpper() == ":BRINGTOFRONT:")
+            {
+                BringToFront();
+                return;
+            }
+
+            if (!content.ToLower().EndsWith("." + ClipDataManager.Instance.FileExtension))
             {
                 return;
             }
@@ -451,12 +456,7 @@ namespace Clippy
 
         private void TrayIcon_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (WindowState == WindowState.Minimized)
-            {
-                WindowState = WindowState.Normal;
-            }
-
-            Activate();
+            BringToFront();
         }
 
         /// <summary>
@@ -522,6 +522,16 @@ namespace Clippy
                 default:
                     break;
             }
+        }
+
+        private void BringToFront()
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
+
+            Activate();
         }
 
         private void ResetWindow()
