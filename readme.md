@@ -1,3 +1,5 @@
+**NOTE: I forked this repo from my old account [scullhead/Clippy](https://github.com/scullhead/Clippy) because I cannot log in to it any more. So any further development will be done here.**
+
 # Clippy - a simple clipboard content manager
 
 Clippy is a tool which is designed to get content from the clipoard and holding it in a list. Each list entry stands for content which can be copied back to the clipboard with a single mouse-click.
